@@ -1,0 +1,35 @@
+# name of the action
+name: publish
+
+# trigger on push events with branch master
+on:
+  push:
+    branches: [ master ]
+
+# pipeline to execute
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:latest
+    steps:
+    - name: clone
+      uses: actions/checkout@v1
+
+    - name: build
+      env:
+        GOOS: linux
+        CGO_ENABLED: '0'
+      run: |
+        go build -a \
+          -ldflags '-s -w -extldflags "-static"' \
+          -o release/vela-s3-cache \
+          github.com/go-vela/vela-s3-cache/cmd/vela-s3-cache
+
+    - name: publish
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: target/vela-s3-cache
+        cache: true
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
