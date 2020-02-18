@@ -2,11 +2,11 @@
 #
 # Use of this source code is governed by the LICENSE file in this repository.
 
-build: binary-build docker-build
+build: binary-build
 
-run: build docker-run
+run: build docker-build docker-run
 
-test: build docker-example
+test: build docker-build docker-example
 
 #################################
 ######      Go clean       ######
@@ -23,7 +23,7 @@ clean:
 #################################
 binary-build:
 
-	GOOS=linux CGO_ENABLED=0 go build -o release/s3-cache-plugin git.target.com/vela-plugins/s3-cache/cmd/vela-s3-cache
+	GOOS=linux CGO_ENABLED=0 go build -o release/s3-cache-plugin github.com/go-vela/vela-s3-cache/cmd/vela-s3-cache
 
 #################################
 ######    Docker Build     ######
