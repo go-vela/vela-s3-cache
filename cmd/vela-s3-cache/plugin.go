@@ -48,10 +48,12 @@ func (p *Plugin) Exec() (err error) {
 
 	// create a minio client
 	logrus.Info("Creating an s3 client")
+
 	mc, err := p.Config.New()
 	if err != nil {
 		return err
 	}
+
 	logrus.Info("s3 client created")
 
 	// execute action specific configuration
@@ -90,7 +92,6 @@ func (p *Plugin) Validate() error {
 	// validate action specific configuration
 	switch p.Config.Action {
 	case flushAction:
-
 		err := p.Flush.Configure(p.Repo)
 		if err != nil {
 			return nil
@@ -99,7 +100,6 @@ func (p *Plugin) Validate() error {
 		// validate flush action
 		return p.Flush.Validate()
 	case rebuildAction:
-
 		err := p.Rebuild.Configure(p.Repo)
 		if err != nil {
 			return nil
@@ -108,7 +108,6 @@ func (p *Plugin) Validate() error {
 		// validate rebuild action
 		return p.Rebuild.Validate()
 	case restoreAction:
-
 		err := p.Restore.Configure(p.Repo)
 		if err != nil {
 			return nil

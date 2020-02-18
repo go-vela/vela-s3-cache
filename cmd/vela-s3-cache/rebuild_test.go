@@ -63,7 +63,6 @@ func TestS3Cache_Rebuild_Validate_NoFilename(t *testing.T) {
 
 func TestS3Cache_Rebuild_Validate_NoTimeout(t *testing.T) {
 	// setup types
-
 	r := &Rebuild{
 		Root:     "bucket",
 		Prefix:   "foo/bar",

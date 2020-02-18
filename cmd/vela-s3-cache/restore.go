@@ -36,6 +36,7 @@ func (r *Restore) Exec(mc *minio.Client) error {
 	logrus.Trace("running restore with provided configuration")
 
 	logrus.Debugf("getting object info on bucket %s from path: %s", r.Root, r.Prefix)
+
 	ok, err := mc.StatObject(r.Root, r.Prefix, minio.StatObjectOptions{})
 	if ok.Key == "" {
 		logrus.Error(err)
@@ -46,6 +47,7 @@ func (r *Restore) Exec(mc *minio.Client) error {
 	defer cancel()
 
 	logrus.Debugf("getting object in bucket %s from path: %s", r.Root, r.Prefix)
+
 	reader, err := mc.GetObjectWithContext(ctx, r.Root, r.Prefix, minio.GetObjectOptions{})
 	if err != nil {
 		return err
@@ -53,6 +55,7 @@ func (r *Restore) Exec(mc *minio.Client) error {
 	defer reader.Close()
 
 	logrus.Debugf("creating file %s on system", r.Filename)
+
 	localFile, err := os.Create(r.Filename)
 	if err != nil {
 		return err
@@ -60,23 +63,27 @@ func (r *Restore) Exec(mc *minio.Client) error {
 	defer localFile.Close()
 
 	logrus.Debugf("get object of file %s", r.Filename)
+
 	stat, err := reader.Stat()
 	if err != nil {
 		return err
 	}
 
 	logrus.Debugf("copy object data to local file %s", r.Filename)
+
 	if _, err := io.CopyN(localFile, reader, stat.Size); err != nil {
 		return err
 	}
 
 	logrus.Debug("get current working directory")
+
 	pwd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
 	logrus.Debugf("unarchiving file %s into directory %s", r.Filename, pwd)
+
 	err = archiver.Unarchive(r.Filename, pwd)
 	if err != nil {
 		return err
@@ -87,7 +94,6 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 // Configure prepares the restore fields for the action to be taken
 func (r *Restore) Configure(repo Repo) error {
-
 	path := fmt.Sprintf("%s/%s/%s/%s", strings.TrimRight(r.Prefix, "/"), repo.Owner, repo.Name, r.Filename)
 
 	logrus.Debugf("created bucket path %s", path)

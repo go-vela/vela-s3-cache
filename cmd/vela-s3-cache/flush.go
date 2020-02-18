@@ -38,14 +38,16 @@ func (f *Flush) Exec(mc *minio.Client) error {
 	defer close(doneCh)
 
 	logrus.Debugf("listing objects in bucket %s under path %s", f.Root, f.Path)
+
 	objectCh := mc.ListObjectsV2(f.Root, f.Path, true, doneCh)
 	for object := range objectCh {
 		if object.Err != nil {
-			return fmt.Errorf("Failed to retrieve object %s: %s", object.Key, object.Err)
+			return fmt.Errorf("unable to retrieve object %s: %s", object.Key, object.Err)
 		}
 
 		if object.LastModified.Before(time.Now().AddDate(0, 0, f.Age*-1)) {
 			logrus.Debugf("removing object from bucket %s in path: %s", f.Root, f.Path)
+
 			err := mc.RemoveObject(f.Root, fmt.Sprintf("%s/%s", f.Path, object.Key))
 			if err != nil {
 				return err
@@ -66,6 +68,7 @@ func (f *Flush) Configure(repo Repo) error {
 	if len(f.Path) > 0 {
 		path = fmt.Sprintf("%s/%s/%s/%s", strings.TrimRight(f.Prefix, "/"), repo.Owner, repo.Name, f.Path)
 	}
+
 	logrus.Debugf("created bucket path %s", path)
 
 	f.Path = strings.TrimLeft(path, "/")
