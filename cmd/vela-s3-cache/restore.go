@@ -37,17 +37,20 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("getting object info on bucket %s from path: %s", r.Root, r.Prefix)
 
+	// collect metadata on the object
 	ok, err := mc.StatObject(r.Root, r.Prefix, minio.StatObjectOptions{})
 	if ok.Key == "" {
 		logrus.Error(err)
 		return nil
 	}
 
+	// set a timeout on the request to the cache provider
 	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
 	defer cancel()
 
 	logrus.Debugf("getting object in bucket %s from path: %s", r.Root, r.Prefix)
 
+	// retrieve the object in specified path of the bucket
 	reader, err := mc.GetObjectWithContext(ctx, r.Root, r.Prefix, minio.GetObjectOptions{})
 	if err != nil {
 		return err
@@ -56,6 +59,7 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("creating file %s on system", r.Filename)
 
+	// create a a file to save the object to
 	localFile, err := os.Create(r.Filename)
 	if err != nil {
 		return err
@@ -64,6 +68,7 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("get object of file %s", r.Filename)
 
+	// get information on the object pulled down from the s3 store
 	stat, err := reader.Stat()
 	if err != nil {
 		return err
@@ -71,12 +76,14 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("copy object data to local file %s", r.Filename)
 
+	// copy the object contents to the file created on system
 	if _, err := io.CopyN(localFile, reader, stat.Size); err != nil {
 		return err
 	}
 
 	logrus.Debug("get current working directory")
 
+	// grab the current working directory for unpacking the object
 	pwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -84,6 +91,7 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("unarchiving file %s into directory %s", r.Filename, pwd)
 
+	// expand the object back onto the filesystem
 	err = archiver.Unarchive(r.Filename, pwd)
 	if err != nil {
 		return err
@@ -94,6 +102,9 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 // Configure prepares the restore fields for the action to be taken
 func (r *Restore) Configure(repo Repo) error {
+	logrus.Trace("configuring restore action")
+
+	// set the default prefix of where to save the object
 	path := fmt.Sprintf("%s/%s/%s/%s", strings.TrimRight(r.Prefix, "/"), repo.Owner, repo.Name, r.Filename)
 
 	logrus.Debugf("created bucket path %s", path)
