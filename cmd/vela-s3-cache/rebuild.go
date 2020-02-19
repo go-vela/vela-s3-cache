@@ -38,6 +38,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	logrus.Trace("running rebuild with provided configuration")
 
 	logrus.Debug("making path /tmp for artifact archive")
+
 	err := os.Mkdir("/tmp", 0400)
 	if err != nil {
 		return err
@@ -54,6 +55,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	}
 
 	logrus.Debugf("opening artifact in path %s", f)
+
 	obj, err := os.Open(f)
 	if err != nil {
 		return err
@@ -63,6 +65,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	defer cancel()
 
 	logrus.Debugf("putting file %s in bucket %s in path: %s", f, r.Root, r.Prefix)
+
 	n, err := mc.PutObjectWithContext(ctx, r.Root, r.Prefix, obj, -1, minio.PutObjectOptions{ContentType: "application/tar"})
 	if err != nil {
 		return err
@@ -76,7 +79,6 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 
 // Configure prepares the rebuild fields for the action to be taken
 func (r *Rebuild) Configure(repo Repo) error {
-
 	path := fmt.Sprintf("%s/%s/%s/%s", strings.TrimRight(r.Prefix, "/"), repo.Owner, repo.Name, r.Filename)
 
 	logrus.Debugf("created bucket path %s", path)
