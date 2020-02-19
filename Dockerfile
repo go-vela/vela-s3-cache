@@ -19,6 +19,6 @@ FROM scratch
 
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
-COPY release/s3-cache-plugin /bin/s3-cache-plugin
+COPY release/vela-s3-cache /bin/vela-s3-cache
 
-ENTRYPOINT [ "/bin/s3-cache-plugin" ]
+ENTRYPOINT [ "/bin/vela-s3-cache" ]
