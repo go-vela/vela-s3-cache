@@ -39,15 +39,19 @@ func (f *Flush) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("listing objects in bucket %s under path %s", f.Root, f.Path)
 
+	// lists all objects matching the path ib
+	// the specified bucket
 	objectCh := mc.ListObjectsV2(f.Root, f.Path, true, doneCh)
 	for object := range objectCh {
 		if object.Err != nil {
 			return fmt.Errorf("unable to retrieve object %s: %s", object.Key, object.Err)
 		}
 
+		// Check if the object meets the flush age
 		if object.LastModified.Before(time.Now().AddDate(0, 0, f.Age*-1)) {
 			logrus.Debugf("removing object from bucket %s in path: %s", f.Root, f.Path)
 
+			// remove the object from the bucket
 			err := mc.RemoveObject(f.Root, fmt.Sprintf("%s/%s", f.Path, object.Key))
 			if err != nil {
 				return err
@@ -62,7 +66,7 @@ func (f *Flush) Exec(mc *minio.Client) error {
 func (f *Flush) Configure(repo Repo) error {
 	logrus.Trace("configuring flush action")
 
-	// configire path based on action
+	// set the default prefix of where to save the object
 	path := fmt.Sprintf("%s/%s/%s", strings.TrimRight(f.Path, "/"), repo.Owner, repo.Name)
 
 	if len(f.Path) > 0 {
