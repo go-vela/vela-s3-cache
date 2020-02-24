@@ -1,6 +1,6 @@
 ## Description
 
-This plugin enables you to cache build resources in an [s3](https://aws.amazon.com/free/storage/?sc_channel=PS&sc_campaign=acquisition_US&sc_publisher=google&sc_medium=ACQ-P%7CPS-GO%7CBrand%7CDesktop%7CSU%7CStorage%7CS3%7CUS%7CEN%7CText&sc_content=s3_e&sc_detail=aws%20s3&sc_category=Storage&sc_segment=293617570035&sc_matchtype=e&sc_country=US&s_kwcid=AL!4422!3!293617570035!e!!g!!aws%20s3&ef_id=EAIaIQobChMIzvj50J_q5wIVUPDACh12ugBiEAAYASAAEgLHwvD_BwE:G:s) compatible store for a Vela pipeline.
+This plugin enables you to cache build resources in an [s3](https://aws.amazon.com/s3/) compatible store for a Vela pipeline.
 
 Source Code: https://github.com/go-vela/vela-s3-cache
 
