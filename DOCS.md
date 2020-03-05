@@ -71,7 +71,7 @@ steps:
 
 ## Parameters
 
-The following parameters are used to configure the image:
+The following parameters can used to configure all image actions:
 
 | Name        | Description                          | Required | Default |
 | ----------- | ------------------------------------ | -------- | ------- |
@@ -107,8 +107,9 @@ The following parameters are used to configure the `rebuild` action:
 
 The following parameters are used to configure the `flush` action:
 
-| Name    | Description                          | Required | Default |
-| ------- | ------------------------------------ | -------- | ------- |
+| Name  | Description                                             | Required | Default |
+| ----- | ------------------------------------------------------- | -------- | ------- |
+| `age` | delete the objects past a specific age (i.e. 60m, 7d)   | `false`  | `14d`   |
 
 #### Upload
 
