@@ -13,6 +13,6 @@ require (
 	github.com/nwaples/rardecode v1.0.0 // indirect
 	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
 	github.com/sirupsen/logrus v1.4.2
-	github.com/urfave/cli v1.22.2
+	github.com/urfave/cli/v2 v2.2.0
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 )

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -21,117 +21,117 @@ func main() {
 	app.Action = run
 	app.Flags = []cli.Flag{
 
-		cli.StringFlag{
-			EnvVar: "PARAMETER_LOG_LEVEL,VELA_LOG_LEVEL,ARTIFACTORY_LOG_LEVEL",
-			Name:   "log.level",
-			Usage:  "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
-			Value:  "info",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_LOG_LEVEL", "VELA_LOG_LEVEL", "ARTIFACTORY_LOG_LEVEL"},
+			Name:    "log.level",
+			Usage:   "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
+			Value:   "info",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_ACTION,CONFIG_ACTION,ARTIFACTORY_ACTION",
-			Name:   "config.action",
-			Usage:  "action to perform against the s3 cache instance",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_ACTION", "CONFIG_ACTION", "ARTIFACTORY_ACTION"},
+			Name:    "config.action",
+			Usage:   "action to perform against the s3 cache instance",
 		},
 
 		// Cache information
-		cli.StringFlag{
-			EnvVar: "PARAMETER_ROOT",
-			Name:   "root",
-			Usage:  "path prefix for all cache default paths",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_ROOT"},
+			Name:    "root",
+			Usage:   "path prefix for all cache default paths",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_FILENAME",
-			Name:   "filename",
-			Usage:  "Filename for the item place in the cache",
-			Value:  "archive.tgz",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_FILENAME"},
+			Name:    "filename",
+			Usage:   "Filename for the item place in the cache",
+			Value:   "archive.tgz",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_PATH",
-			Name:   "path",
-			Usage:  "path to store the cache file",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_PATH"},
+			Name:    "path",
+			Usage:   "path to store the cache file",
 		},
-		cli.StringSliceFlag{
-			EnvVar: "PARAMETER_MOUNT",
-			Name:   "mount",
-			Usage:  "list of files/directories to cache",
+		&cli.StringSliceFlag{
+			EnvVars: []string{"PARAMETER_MOUNT"},
+			Name:    "mount",
+			Usage:   "list of files/directories to cache",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_FLUSH_AGE",
-			Name:   "age",
-			Usage:  "flush cache files older than # days",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_FLUSH_AGE"},
+			Name:    "age",
+			Usage:   "flush cache files older than # days",
 		},
-		cli.DurationFlag{
-			EnvVar: "PARAMETER_TIMEOUT",
-			Name:   "timeout",
-			Usage:  "Default timeout for cache requests",
-			Value:  10 * time.Minute,
+		&cli.DurationFlag{
+			EnvVars: []string{"PARAMETER_TIMEOUT"},
+			Name:    "timeout",
+			Usage:   "Default timeout for cache requests",
+			Value:   10 * time.Minute,
 		},
 
 		// S3 information
-		cli.StringFlag{
-			EnvVar: "PARAMETER_SERVER,PARAMETER_ENDPOINT,CACHE_S3_ENDPOINT,CACHE_S3_SERVER,S3_ENDPOINT",
-			Name:   "config.server",
-			Usage:  "s3 server to store the cache",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_SERVER", "PARAMETER_ENDPOINT", "CACHE_S3_ENDPOINT", "CACHE_S3_SERVER", "S3_ENDPOINT"},
+			Name:    "config.server",
+			Usage:   "s3 server to store the cache",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_ACCELERATED_ENDPOINT,CACHE_S3_ACCELERATED_ENDPOINT",
-			Name:   "config.accelerated-endpoint",
-			Usage:  "s3 accelerated endpoint",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_ACCELERATED_ENDPOINT", "CACHE_S3_ACCELERATED_ENDPOINT"},
+			Name:    "config.accelerated-endpoint",
+			Usage:   "s3 accelerated endpoint",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_ACCESS_KEY,CACHE_S3_ACCESS_KEY,AWS_ACCESS_KEY_ID",
-			Name:   "config.access-key",
-			Usage:  "s3 access key for authentication to server",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_ACCESS_KEY", "CACHE_S3_ACCESS_KEY", "AWS_ACCESS_KEY_ID"},
+			Name:    "config.access-key",
+			Usage:   "s3 access key for authentication to server",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_SECRET_KEY,CACHE_S3_SECRET_KEY,AWS_SECRET_ACCESS_KEY",
-			Name:   "config.secret-key",
-			Usage:  "s3 secret key for authentication to server",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_SECRET_KEY", "CACHE_S3_SECRET_KEY", "AWS_SECRET_ACCESS_KEY"},
+			Name:    "config.secret-key",
+			Usage:   "s3 secret key for authentication to server",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_SESSION_TOKEN,CACHE_S3_SESSION_TOKEN,AWS_SESSION_TOKEN",
-			Name:   "config.session-token",
-			Usage:  "s3 session token",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_SESSION_TOKEN", "CACHE_S3_SESSION_TOKEN", "AWS_SESSION_TOKEN"},
+			Name:    "config.session-token",
+			Usage:   "s3 session token",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_REGION,CACHE_S3_REGION",
-			Name:   "config.region",
-			Usage:  "s3 region for the region of the bucket",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_REGION", "CACHE_S3_REGION"},
+			Name:    "config.region",
+			Usage:   "s3 region for the region of the bucket",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_CA_CERT,CACHE_S3_CA_CERT",
-			Name:   "config.ca_cert",
-			Usage:  "ca cert to connect to s3 server",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_CA_CERT", "CACHE_S3_CA_CERT"},
+			Name:    "config.ca_cert",
+			Usage:   "ca cert to connect to s3 server",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_CA_CERT_PATH,CACHE_S3_CA_CERT_PATH",
-			Name:   "config.ca_cert_path",
-			Usage:  "location of the ca cert to connect to s3 server",
-			Value:  "/etc/ssl/certs/ca-certificates.crt",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_CA_CERT_PATH", "CACHE_S3_CA_CERT_PATH"},
+			Name:    "config.ca_cert_path",
+			Usage:   "location of the ca cert to connect to s3 server",
+			Value:   "/etc/ssl/certs/ca-certificates.crt",
 		},
 
 		// Build information (for setting defaults)
-		cli.StringFlag{
-			EnvVar: "REPOSITORY_ORG",
-			Name:   "repo.owner",
-			Usage:  "repository owner",
+		&cli.StringFlag{
+			EnvVars: []string{"REPOSITORY_ORG"},
+			Name:    "repo.owner",
+			Usage:   "repository owner",
 		},
-		cli.StringFlag{
-			EnvVar: "REPOSITORY_NAME",
-			Name:   "repo.name",
-			Usage:  "repository name",
+		&cli.StringFlag{
+			EnvVars: []string{"REPOSITORY_NAME"},
+			Name:    "repo.name",
+			Usage:   "repository name",
 		},
-		cli.StringFlag{
-			EnvVar: "REPOSITORY_BRANCH",
-			Name:   "repo.branch",
-			Usage:  "repository default branch",
-			Value:  "master",
+		&cli.StringFlag{
+			EnvVars: []string{"REPOSITORY_BRANCH"},
+			Name:    "repo.branch",
+			Usage:   "repository default branch",
+			Value:   "master",
 		},
-		cli.StringFlag{
-			EnvVar: "REPOSITORY_BRANCH",
-			Name:   "repo.commit.branch",
-			Usage:  "git commit branch",
-			Value:  "master",
+		&cli.StringFlag{
+			EnvVars: []string{"REPOSITORY_BRANCH"},
+			Name:    "repo.commit.branch",
+			Usage:   "git commit branch",
+			Value:   "master",
 		},
 	}
 
