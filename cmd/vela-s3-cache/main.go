@@ -37,6 +37,11 @@ func main() {
 		&cli.StringFlag{
 			EnvVars: []string{"PARAMETER_ROOT"},
 			Name:    "root",
+			Usage:   "name of the s3 bucket",
+		},
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_PREFIX"},
+			Name:    "prefix",
 			Usage:   "path prefix for all cache default paths",
 		},
 		&cli.StringFlag{
