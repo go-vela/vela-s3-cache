@@ -16,9 +16,27 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "s3 cache plugin"
-	app.Usage = "s3 cache plugin"
+
+	// Plugin Information
+
+	app.Name = "vela-s3-cache"
+	app.HelpName = "vela-s3-cache"
+	app.Usage = "Vela S3 cache plugin for managing a build cache in S3"
+	app.Copyright = "Copyright (c) 2020 Target Brands, Inc. All rights reserved."
+	app.Authors = []*cli.Author{
+		{
+			Name:  "Vela Admins",
+			Email: "vela@target.com",
+		},
+	}
+
+	// Plugin Metadata
+
+	app.Compiled = time.Now()
 	app.Action = run
+
+	// Plugin Flags
+
 	app.Flags = []cli.Flag{
 
 		&cli.StringFlag{
@@ -33,7 +51,8 @@ func main() {
 			Usage:   "action to perform against the s3 cache instance",
 		},
 
-		// Cache information
+		// Cache Flags
+
 		&cli.StringFlag{
 			EnvVars: []string{"PARAMETER_ROOT"},
 			Name:    "root",
@@ -72,7 +91,8 @@ func main() {
 			Value:   10 * time.Minute,
 		},
 
-		// S3 information
+		// S3 Flags
+
 		&cli.StringFlag{
 			EnvVars: []string{"PARAMETER_SERVER", "PARAMETER_ENDPOINT", "CACHE_S3_ENDPOINT", "CACHE_S3_SERVER", "S3_ENDPOINT"},
 			Name:    "config.server",
@@ -140,7 +160,8 @@ func main() {
 		},
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	err := app.Run(os.Args)
+	if err != nil {
 		logrus.Fatal(err)
 	}
 }
@@ -173,6 +194,7 @@ func run(c *cli.Context) (err error) {
 		"time": time.Now(),
 	}).Info("Vela S3 Cache Plugin")
 
+	// create the plugin
 	p := Plugin{
 		// config configuration
 		Config: &Config{
@@ -216,17 +238,12 @@ func run(c *cli.Context) (err error) {
 		},
 	}
 
-	// validate the plugin configuration
+	// validate the plugin
 	err = p.Validate()
 	if err != nil {
 		return err
 	}
 
-	// start the plugin execution
-	err = p.Exec()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	// execute the plugin
+	return p.Exec()
 }
