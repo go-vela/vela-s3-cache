@@ -2,15 +2,19 @@
 #
 # Use of this source code is governed by the LICENSE file in this repository.
 
+.PHONY: build
 build: binary-build
 
+.PHONY: run
 run: build docker-build docker-run
 
+.PHONY: test
 test: build docker-build docker-example
 
 #################################
 ######      Go clean       ######
 #################################
+.PHONY: clean
 clean:
 
 	@go mod tidy
@@ -21,6 +25,7 @@ clean:
 #################################
 ######    Build Binary     ######
 #################################
+.PHONY: binary-build
 binary-build:
 
 	GOOS=linux CGO_ENABLED=0 go build -o release/vela-s3-cache github.com/go-vela/vela-s3-cache/cmd/vela-s3-cache
@@ -28,6 +33,7 @@ binary-build:
 #################################
 ######    Docker Build     ######
 #################################
+.PHONY: docker-build
 docker-build:
 
 	docker build --no-cache -t s3-cache-plugin:local .
@@ -35,6 +41,7 @@ docker-build:
 #################################
 ######     Docker Run      ######
 #################################
+.PHONY: docker-run
 docker-run:
 
 	docker run --rm \
@@ -52,6 +59,7 @@ docker-run:
 		-w /home/ \
 		s3-cache-plugin:local
 
+.PHONY: docker-example
 docker-example:
 
 	docker run --rm \
