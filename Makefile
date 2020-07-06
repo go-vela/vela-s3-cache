@@ -65,7 +65,7 @@ docker-example:
 		-e REPOSITORY_NAME=s3-cache \
 		-e PARAMETER_FLUSH \
 		-e PARAMETER_REBUILD \
-		-e PARAMETER_RESTORE \	
+		-e PARAMETER_RESTORE \
 		-v $(PWD)/example/:/home/ \
 		-w /home/ \
-		s3-cache-plugin:local		
+		s3-cache-plugin:local
