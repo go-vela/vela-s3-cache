@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-vela/archiver"
+	"github.com/mholt/archiver"
 	"github.com/minio/minio-go/v6"
 	"github.com/sirupsen/logrus"
 )
