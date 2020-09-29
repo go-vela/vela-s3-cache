@@ -1,0 +1,74 @@
+pipeline:
+    validate:
+      image: golang:latest
+      commands:
+        # Check that go vet ./... produces a zero diff; clean up any changes afterwards.
+        - go vet ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+        # Check that go fmt ./... produces a zero diff; clean up any changes afterwards.
+        - go fmt ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+  
+    build:
+      image: golang:latest
+      environment:
+        CGO_ENABLED: '1'
+        GOOS: linux
+      commands:
+        - go build -a -ldflags '-extldflags "-static"' -o release/slack-plugin git.target.com/vela-plugins/slack/cmd/slack
+  
+    docker-build:
+      when:
+        local: false
+      image: plugins/docker:17.12
+      pull: true
+      dry_run: true
+      registry: docker.target.com
+      repo: docker.target.com/vela-plugins/slack
+      tags:
+        - latest
+        - '${DRONE_COMMIT:0:8}' # for tagged releases
+      storage_driver: overlay2
+      storage_path: /drone/src/git.target.com/vela-plugins/slack/.docker
+  
+    # These steps are commented out because we are going to use Vela
+    # to deploy the image. We've left the pipeline here in case
+    # something goes wrong in Vela and we need to make a change.
+    #
+    # docker-publish:
+    #   when:
+    #     branch: master
+    #     event: push
+    #   image: plugins/docker:17.12
+    #   pull: true
+    #   secrets: [ docker_username, docker_password ]
+    #   registry: docker.target.com
+    #   repo: docker.target.com/vela-plugins/slack
+    #   tags:
+    #     - latest
+    #     - "${DRONE_COMMIT:0:8}" # for tagged releases
+    #   storage_driver: overlay2
+    #   storage_path: /drone/src/git.target.com/vela-plugins/slack/.docker
+    #
+    # docker-vanity-tag:
+    #   when:
+    #     event: tag
+    #   image: docker.target.com/drone/docker-promotion:1
+    #   pull: true
+    #   secrets: [ registry_username, registry_password ]
+    #   registry: docker.target.com
+    #   source_repo: docker.target.com/vela-plugins/slack
+    #   source_tag: "${DRONE_COMMIT:0:8}"
+    #   target_tags:
+    #     - latest
+    #     - "1"
+    #     - "1.1"
+  
+  secrets:
+    docker_username:
+      path: secret/org/vela-plugins/docker/username
+    docker_password:
+      path: secret/org/vela-plugins/docker/password
+    registry_username:
+      path: secret/org/vela-plugins/docker/username
+    registry_password:
+      path: secret/org/vela-plugins/docker/password
+  
