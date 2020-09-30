@@ -16,7 +16,7 @@ Sample of restoring a cache:
 steps:
   - name: restore_cache
     image: target/vela-s3-cache:v0.1.0
-    pull: true
+    pull: always
     parameters:
       action: restore
       root: mybucket
@@ -29,7 +29,7 @@ Sample of rebuilding a cache:
 steps:
   - name: rebuild_cache
     image: target/vela-s3-cache:v0.1.0
-    pull: true
+    pull: always
     parameters:
       action: rebuild
       root: mybucket
@@ -44,7 +44,7 @@ Sample of flushing a cache:
 steps:
   - name: flushing_cache
     image: target/vela-s3-cache:v0.1.0
-    pull: true
+    pull: always
     parameters:
       action: flush
       root: mybucket
@@ -61,7 +61,7 @@ You can use Vela secrets to substitute sensitive values at runtime:
 steps:
   - name: restore_cache
     image: target/vela-s3-cache:v0.1.0
-    pull: true
+    pull: always
 +   secrets: [ cache_access_key, cache_secret_key ]
     parameters:
       action: restore
