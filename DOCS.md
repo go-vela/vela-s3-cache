@@ -8,15 +8,15 @@ Registry: https://hub.docker.com/r/target/vela-s3-cache
 
 ## Usage
 
-_The plugin supports reading all parameters via environment variables or files. Values set as a file take precedence over default values set from the environment._
+**NOTE: It is not recommended to use `latest` as the tag for the Docker image. Users should use a semantically versioned tag instead.**
 
 Sample of restoring a cache:
 
 ```yaml
 steps:
   - name: restore_cache
-    image: target/vela-s3-cache:v0.1.0
-    pull: true
+    image: target/vela-s3-cache:latest
+    pull: always
     parameters:
       action: restore
       root: mybucket
@@ -28,8 +28,8 @@ Sample of rebuilding a cache:
 ```yaml
 steps:
   - name: rebuild_cache
-    image: target/vela-s3-cache:v0.1.0
-    pull: true
+    image: target/vela-s3-cache:latest
+    pull: always
     parameters:
       action: rebuild
       root: mybucket
@@ -43,8 +43,8 @@ Sample of flushing a cache:
 ```yaml
 steps:
   - name: flushing_cache
-    image: target/vela-s3-cache:v0.1.0
-    pull: true
+    image: target/vela-s3-cache:latest
+    pull: always
     parameters:
       action: flush
       root: mybucket
@@ -60,8 +60,8 @@ You can use Vela secrets to substitute sensitive values at runtime:
 ```diff
 steps:
   - name: restore_cache
-    image: target/vela-s3-cache:v0.1.0
-    pull: true
+    image: target/vela-s3-cache:latest
+    pull: always
 +   secrets: [ cache_access_key, cache_secret_key ]
     parameters:
       action: restore
@@ -72,6 +72,11 @@ steps:
 ```
 
 ## Parameters
+
+**NOTE:**
+
+* the plugin supports reading all parameters via environment variables or files
+* values set from a file take precedence over values set from the environment
 
 The following parameters can used to configure all image actions:
 
