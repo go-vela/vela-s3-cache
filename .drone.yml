@@ -67,8 +67,8 @@ pipeline:
       path: secret/org/vela-plugins/docker/username
     docker_password:
       path: secret/org/vela-plugins/docker/password
-    registry_username:
-      path: secret/org/vela-plugins/docker/username
-    registry_password:
-      path: secret/org/vela-plugins/docker/password
+    # registry_username:
+    #   path: secret/org/vela-plugins/docker/username
+    # registry_password:
+    #   path: secret/org/vela-plugins/docker/password
   

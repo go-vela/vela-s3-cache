@@ -259,6 +259,8 @@ func run(c *cli.Context) (err error) {
 		},
 	}
 
+	logrus.Info("hellope world")
+
 	// validate the plugin
 	err = p.Validate()
 	if err != nil {
