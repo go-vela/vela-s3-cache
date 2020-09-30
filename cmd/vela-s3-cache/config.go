@@ -86,7 +86,7 @@ func (c *Config) Validate() error {
 
 	// verify access key is provided
 	if len(c.AccessKey) == 0 {
-		return fmt.Errorf("no access key provided.")
+		return fmt.Errorf("no access key providedooooooo") //[here] Revert before making PR.
 	}
 
 	// verify secret key is provided
