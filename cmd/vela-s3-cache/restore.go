@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -27,18 +28,22 @@ type Restore struct {
 	Prefix string
 	// sets the name of the cache object
 	Filename string
+	// sets the path for where to store the object
+	Path string
 	// sets the timeout on the call to s3
 	Timeout time.Duration
+	// will hold our final namespace to store the object at
+	Namespace string
 }
 
 // Exec formats and runs the actions for restoring a cache in s3.
 func (r *Restore) Exec(mc *minio.Client) error {
 	logrus.Trace("running restore with provided configuration")
 
-	logrus.Debugf("getting object info on bucket %s from path: %s", r.Root, r.Prefix)
+	logrus.Debugf("getting object info on bucket %s from path: %s", r.Root, r.Namespace)
 
 	// collect metadata on the object
-	ok, err := mc.StatObject(r.Root, r.Prefix, minio.StatObjectOptions{})
+	ok, err := mc.StatObject(r.Root, r.Namespace, minio.StatObjectOptions{})
 	if ok.Key == "" {
 		logrus.Error(err)
 		return nil
@@ -48,10 +53,10 @@ func (r *Restore) Exec(mc *minio.Client) error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
 	defer cancel()
 
-	logrus.Debugf("getting object in bucket %s from path: %s", r.Root, r.Prefix)
+	logrus.Debugf("getting object in bucket %s from path: %s", r.Root, r.Namespace)
 
 	// retrieve the object in specified path of the bucket
-	reader, err := mc.GetObjectWithContext(ctx, r.Root, r.Prefix, minio.GetObjectOptions{})
+	reader, err := mc.GetObjectWithContext(ctx, r.Root, r.Namespace, minio.GetObjectOptions{})
 	if err != nil {
 		return err
 	}
@@ -81,6 +86,8 @@ func (r *Restore) Exec(mc *minio.Client) error {
 		return err
 	}
 
+	logrus.Infof("copied %s to local filesystem", r.Filename)
+
 	logrus.Debug("get current working directory")
 
 	// grab the current working directory for unpacking the object
@@ -97,19 +104,36 @@ func (r *Restore) Exec(mc *minio.Client) error {
 		return err
 	}
 
+	logrus.Infof("successfully unpacked archive %s", r.Filename)
+
+	// delete the temporary archive file
+	err = os.Remove(r.Filename)
+	if err != nil {
+		logrus.Infof("delete of archive file %s unsuccessful", r.Filename)
+	} else {
+		logrus.Infof("cache archive %s successfully deleted", r.Filename)
+	}
+
+	logrus.Infof("cache restore action completed")
+
 	return nil
 }
 
-// Configure prepares the restore fields for the action to be taken
-func (r *Restore) Configure(repo Repo) error {
+// Configure prepares the restore fields for the action to be taken.
+func (r *Restore) Configure(repo *Repo) error {
 	logrus.Trace("configuring restore action")
 
-	// set the default prefix of where to save the object
-	path := fmt.Sprintf("%s/%s/%s/%s", strings.TrimRight(r.Prefix, "/"), repo.Owner, repo.Name, r.Filename)
+	// set the path for where to get the object from
+	path := filepath.Join(r.Prefix, repo.Owner, repo.Name, r.Path, r.Filename)
+
+	if len(path) == 0 {
+		return fmt.Errorf("constructed bucket path is empty")
+	}
 
 	logrus.Debugf("created bucket path %s", path)
 
-	r.Prefix = strings.TrimLeft(path, "/")
+	// clean the path and store in Namespace
+	r.Namespace = filepath.Clean(path)
 
 	return nil
 }
@@ -130,7 +154,7 @@ func (r *Restore) Validate() error {
 
 	// verify timeout is provided
 	if strings.EqualFold(r.Timeout.String(), "0s") {
-		return fmt.Errorf("no timeout provided")
+		return fmt.Errorf("timeout must be greater than 0")
 	}
 
 	return nil

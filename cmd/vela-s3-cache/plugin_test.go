@@ -18,6 +18,13 @@ func TestS3Cache_Plugin_Validate(t *testing.T) {
 			Action:    "flush",
 			AccessKey: "123456",
 			SecretKey: "654321",
+			Server:    "https://server",
+		},
+		Repo: &Repo{
+			Owner:       "foo",
+			Name:        "bar",
+			Branch:      "main",
+			BuildBranch: "main",
 		},
 		Flush: &Flush{
 			Root: "bucket",

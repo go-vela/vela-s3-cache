@@ -11,13 +11,14 @@ import (
 	"time"
 
 	"github.com/go-vela/vela-s3-cache/version"
-
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
+// nolint:funlen // function is lengthy due to number of
+// customizable fields.
 func main() {
 	app := cli.NewApp()
 
@@ -38,10 +39,10 @@ func main() {
 
 	app.Action = run
 	app.Compiled = time.Now()
-	app.Version = version.New().Semantic()
+	// app.Version = version.New().Semantic()
 
 	// Plugin Flags
-
+	// nolint:lll // not breaking lines to keep it consistent
 	app.Flags = []cli.Flag{
 
 		&cli.StringFlag{
@@ -91,11 +92,12 @@ func main() {
 			Name:     "mount",
 			Usage:    "list of files/directories to cache",
 		},
-		&cli.StringFlag{
+		&cli.DurationFlag{
 			EnvVars:  []string{"PARAMETER_FLUSH_AGE"},
 			FilePath: string("/vela/parameters/s3_cache/age,/vela/secrets/s3_cache/age"),
 			Name:     "age",
 			Usage:    "flush cache files older than # days",
+			Value:    14 * 24 * time.Hour,
 		},
 		&cli.DurationFlag{
 			EnvVars:  []string{"PARAMETER_TIMEOUT"},
@@ -159,30 +161,30 @@ func main() {
 
 		// Build information (for setting defaults)
 		&cli.StringFlag{
-			EnvVars:  []string{"REPOSITORY_ORG"},
+			EnvVars:  []string{"VELA_REPO_ORG", "REPOSITORY_ORG"},
 			FilePath: string("/vela/parameters/s3_cache/repo/owner,/vela/secrets/s3_cache/repo/owner"),
 			Name:     "repo.owner",
 			Usage:    "repository owner",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"REPOSITORY_NAME"},
+			EnvVars:  []string{"VELA_REPO_NAME", "REPOSITORY_NAME"},
 			FilePath: string("/vela/parameters/s3_cache/repo/name,/vela/secrets/s3_cache/repo/name"),
 			Name:     "repo.name",
 			Usage:    "repository name",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"REPOSITORY_BRANCH"},
+			EnvVars:  []string{"VELA_REPO_BRANCH", "REPOSITORY_BRANCH"},
 			FilePath: string("/vela/parameters/s3_cache/repo/branch,/vela/secrets/s3_cache/repo/branch"),
 			Name:     "repo.branch",
 			Usage:    "repository default branch",
-			Value:    "master",
+			Value:    "main",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"REPOSITORY_BRANCH"},
+			EnvVars:  []string{"VELA_BUILD_BRANCH", "REPOSITORY_BUILD_BRANCH"},
 			FilePath: string("/vela/parameters/s3_cache/repo/branch,/vela/secrets/s3_cache/repo/branch"),
-			Name:     "repo.commit.branch",
-			Usage:    "git commit branch",
-			Value:    "master",
+			Name:     "repo.build.branch",
+			Usage:    "git build branch",
+			Value:    "main",
 		},
 	}
 
@@ -224,13 +226,14 @@ func run(c *cli.Context) (err error) {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"code": "https://github.com/go-vela/vela-s3-cache",
-		"docs": "https://go-vela.github.io/docs/plugins/registry/s3-cache",
-		"time": time.Now(),
+		"code":     "https://github.com/go-vela/vela-s3-cache",
+		"docs":     "https://go-vela.github.io/docs/plugins/registry/s3-cache",
+		"registry": "https://hub.docker.com/r/target/vela-s3-cache",
+		"version":  version.New().Canonical,
 	}).Info("Vela S3 Cache Plugin")
 
 	// create the plugin
-	p := Plugin{
+	p := &Plugin{
 		// config configuration
 		Config: &Config{
 			Action:              c.String("config.action"),
@@ -246,8 +249,9 @@ func run(c *cli.Context) (err error) {
 		// flush configuration
 		Flush: &Flush{
 			Root:   c.String("root"),
-			Prefix: c.String("prefix"),
+			Age:    c.Duration("age"),
 			Path:   c.String("path"),
+			Prefix: c.String("prefix"),
 		},
 		// rebuild configuration
 		Rebuild: &Rebuild{
@@ -255,6 +259,7 @@ func run(c *cli.Context) (err error) {
 			Filename: c.String("filename"),
 			Timeout:  c.Duration("timeout"),
 			Mount:    c.StringSlice("mount"),
+			Path:     c.String("path"),
 			Prefix:   c.String("prefix"),
 		},
 		// restore configuration
@@ -262,14 +267,15 @@ func run(c *cli.Context) (err error) {
 			Root:     c.String("root"),
 			Filename: c.String("filename"),
 			Timeout:  c.Duration("timeout"),
+			Path:     c.String("path"),
 			Prefix:   c.String("prefix"),
 		},
 		// repository configuration from environment
-		Repo: Repo{
-			Owner:        c.String("repo.owner"),
-			Name:         c.String("repo.name"),
-			Branch:       c.String("repo.branch"),
-			CommitBranch: c.String("repo.commit.branch"),
+		Repo: &Repo{
+			Owner:       c.String("repo.owner"),
+			Name:        c.String("repo.name"),
+			Branch:      c.String("repo.branch"),
+			BuildBranch: c.String("repo.build.branch"),
 		},
 	}
 

@@ -79,9 +79,9 @@ func (c *Config) New() (*minio.Client, error) {
 func (c *Config) Validate() error {
 	logrus.Trace("validating config plugin configuration")
 
-	// verify action is provided
-	if len(c.Action) == 0 {
-		return fmt.Errorf("no config action provided")
+	// verify server is provided
+	if len(c.Server) == 0 {
+		return fmt.Errorf("no cache server provided")
 	}
 
 	// verify access key is provided
@@ -92,6 +92,11 @@ func (c *Config) Validate() error {
 	// verify secret key is provided
 	if len(c.SecretKey) == 0 {
 		return fmt.Errorf("no secret key provided")
+	}
+
+	// verify action is provided
+	if len(c.Action) == 0 {
+		return fmt.Errorf("no config action provided")
 	}
 
 	return nil

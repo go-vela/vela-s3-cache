@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -24,6 +25,8 @@ type Rebuild struct {
 	// sets the name of the bucket
 	Root string
 	// sets the path for where to store the object
+	Path string
+	// sets the prefix for where to store the object
 	Prefix string
 	// sets the name of the cache object
 	Filename string
@@ -31,66 +34,77 @@ type Rebuild struct {
 	Timeout time.Duration
 	// sets the file or directories locations to build your cache from
 	Mount []string
+	// will hold our final namespace to store the object at
+	Namespace string
 }
 
 // Exec formats and runs the actions for rebuilding a cache in s3.
 func (r *Rebuild) Exec(mc *minio.Client) error {
 	logrus.Trace("running rebuild with provided configuration")
 
-	logrus.Debug("making path /tmp for artifact archive")
-
-	// create a new tmp directory to build the upload object
-	err := os.Mkdir("/tmp", 0400)
-	if err != nil {
-		return err
-	}
-
 	t := archiver.NewTarGz()
 
-	f := fmt.Sprintf("/tmp/%s", r.Filename)
+	logrus.Debug("determining temp directory for archive")
+
+	f := filepath.Join(os.TempDir(), r.Filename)
+
 	logrus.Debugf("archiving artifact in path %s", f)
 
 	// archive the objects in the mount path provided
-	err = t.Archive(r.Mount, f)
+	err := t.Archive(r.Mount, f)
 	if err != nil {
 		return err
 	}
 
-	logrus.Debugf("opening artifact in path %s", f)
+	logrus.Debugf("archive %s created", f)
+
+	logrus.Debugf("opening artifact %s for reading", f)
 
 	obj, err := os.Open(f)
 	if err != nil {
 		return err
 	}
 
+	logrus.Debugf("archive %s opened for reading", f)
+
 	// set a timeout on the request to the cache provider
 	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
 	defer cancel()
 
-	logrus.Debugf("putting file %s in bucket %s in path: %s", f, r.Root, r.Prefix)
+	logrus.Debugf("putting archive %s in bucket %s in path: %s", f, r.Root, r.Namespace)
+
+	// create an options object for the upload
+	mObj := minio.PutObjectOptions{
+		ContentType: "application/tar",
+	}
 
 	// upload the object to the specified location in the bucket
-	n, err := mc.PutObjectWithContext(ctx, r.Root, r.Prefix, obj, -1, minio.PutObjectOptions{ContentType: "application/tar"})
+	n, err := mc.PutObjectWithContext(ctx, r.Root, r.Namespace, obj, -1, mObj)
 	if err != nil {
 		return err
 	}
 
 	u := uint64(n)
-	logrus.Infof("%s data rebuilt", humanize.Bytes(u))
+	logrus.Infof("cache rebuild action completed. %s of data rebuilt and stored", humanize.Bytes(u))
 
 	return nil
 }
 
-// Configure prepares the rebuild fields for the action to be taken
-func (r *Rebuild) Configure(repo Repo) error {
+// Configure prepares the rebuild fields for the action to be taken.
+func (r *Rebuild) Configure(repo *Repo) error {
 	logrus.Trace("configuring rebuild action")
 
-	// set the default prefix of where to save the object
-	path := fmt.Sprintf("%s/%s/%s/%s", strings.TrimRight(r.Prefix, "/"), repo.Owner, repo.Name, r.Filename)
+	// set the path for where to store the object
+	path := filepath.Join(r.Prefix, repo.Owner, repo.Name, r.Path, r.Filename)
+
+	if len(path) == 0 {
+		return fmt.Errorf("constructed bucket path is empty")
+	}
 
 	logrus.Debugf("created bucket path %s", path)
 
-	r.Prefix = strings.TrimLeft(path, "/")
+	// clean the path and store in Namespace
+	r.Namespace = filepath.Clean(path)
 
 	return nil
 }
@@ -111,12 +125,20 @@ func (r *Rebuild) Validate() error {
 
 	// verify timeout is provided
 	if strings.EqualFold(r.Timeout.String(), "0s") {
-		return fmt.Errorf("no timeout provided")
+		return fmt.Errorf("timeout must be greater than 0")
 	}
 
 	// verify mount is provided
 	if len(r.Mount) == 0 {
 		return fmt.Errorf("no mount provided")
+	}
+
+	// validate that the source exists
+	for _, mount := range r.Mount {
+		_, err := os.Lstat(mount)
+		if err != nil {
+			return fmt.Errorf("mount: %s, make sure file or directory exists", mount)
+		}
 	}
 
 	return nil

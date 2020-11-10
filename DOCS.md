@@ -77,48 +77,47 @@ steps:
 
 * the plugin supports reading all parameters via environment variables or files
 * values set from a file take precedence over values set from the environment
+* `root` bucket is expected to be created beforehand
 
 The following parameters can used to configure all image actions:
 
 | Name        | Description                          | Required | Default |
 | ----------- | ------------------------------------ | -------- | ------- |
 | `action`    | action to perform against s3         | `true`   | `N/A`   |
-| `log_level` | set the log level for the plugin     | `true`   | `info`  |
+| `log_level` | set the log level for the plugin     | `false`  | `info`  |
 | `server`    | s3 instance to communicate with      | `true`   | `N/A`   |
 | `access_key`| access key for communication with s3 | `true`   | `N/A`   |
 | `secret_key`| secret key for communication with s3 | `true`   | `N/A`   |
 | `root`      | name of the s3 bucket                | `true`   | `N/A`   |
-| `prefix`    | path prefix for the object(s)        | `true`   | `N/A`   |
+| `prefix`    | path prefix for the object(s)        | `false`  | `N/A`   |
+| `path`      | custom path for the object(s)        | `false`  | `N/A`   |
 
-#### Restore
+### Restore
 
 The following parameters are used to configure the `restore` action:
 
-| Name       | Description                                                | Required | Default |
-| ---------- | ---------------------------------------------------------- | -------- | ------  |
-| `filename` | the name of the cache object                               | `false`  | `true`  |
-| `mount`    | the file or directories locations to build your cache from | `true`   | `N/A`   |
-| `timeout`  | the timeout for the call to s3                             | `false`  | `true`  |
+| Name       | Description                                                | Required | Default       |
+| ---------- | ---------------------------------------------------------- | -------- | ------------- |
+| `filename` | the name of the cache object                               | `true`   | `archive.tgz` |
+| `mount`    | the file or directories locations to build your cache from | `true`   | `N/A`         |
+| `timeout`  | the timeout for the call to s3                             | `false`  | `10m`         |
 
-
-#### Rebuild
+### Rebuild
 
 The following parameters are used to configure the `rebuild` action:
 
-| Name       | Description                    | Required | Default |
-| ---------- | ------------------------------ | -------- | ------  |
-| `filename` | the name of the cache object   | `false`  | `true`  |
-| `timeout`  | the timeout for the call to s3 | `false`  | `true`  |
+| Name       | Description                    | Required | Default      |
+| ---------- | ------------------------------ | -------- | ------------ |
+| `filename` | the name of the cache object   | `true`  | `archive.tgz` |
+| `timeout`  | the timeout for the call to s3 | `false`  | `10m`        |
 
-#### Flush
+### Flush
 
 The following parameters are used to configure the `flush` action:
 
 | Name  | Description                                             | Required | Default |
 | ----- | ------------------------------------------------------- | -------- | ------- |
 | `age` | delete the objects past a specific age (i.e. 60m, 7d)   | `false`  | `14d`   |
-
-#### Upload
 
 ## Template
 
