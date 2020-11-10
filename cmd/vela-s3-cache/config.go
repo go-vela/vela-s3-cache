@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/minio/minio-go/v6"
-	"github.com/minio/minio-go/v6/pkg/credentials"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/sirupsen/logrus"
 )
 
@@ -63,7 +63,12 @@ func (c *Config) New() (*minio.Client, error) {
 		}
 	}
 
-	mc, err := minio.NewWithCredentials(endpoint, creds, useSSL, "")
+	opts := &minio.Options{
+		Creds:  creds,
+		Secure: useSSL,
+	}
+
+	mc, err := minio.New(endpoint, opts)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/mholt/archiver"
-	"github.com/minio/minio-go/v6"
+	"github.com/minio/minio-go/v7"
 	"github.com/sirupsen/logrus"
 )
 
@@ -79,12 +79,12 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	}
 
 	// upload the object to the specified location in the bucket
-	n, err := mc.PutObjectWithContext(ctx, r.Root, r.Namespace, obj, -1, mObj)
+	n, err := mc.PutObject(ctx, r.Root, r.Namespace, obj, -1, mObj)
 	if err != nil {
 		return err
 	}
 
-	u := uint64(n)
+	u := uint64(n.Size)
 	logrus.Infof("cache rebuild action completed. %s of data rebuilt and stored", humanize.Bytes(u))
 
 	return nil

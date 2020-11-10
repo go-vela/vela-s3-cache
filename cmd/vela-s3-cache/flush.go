@@ -5,11 +5,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 	"time"
 
-	"github.com/minio/minio-go/v6"
+	"github.com/minio/minio-go/v7"
 	"github.com/sirupsen/logrus"
 )
 
@@ -36,17 +37,19 @@ func (f *Flush) Exec(mc *minio.Client) error {
 	// temp var for messaging to user
 	objectsExist := false
 
-	// create a done channel to control 'ListObjectsV2' go routine.
-	doneCh := make(chan struct{})
-
-	// indicate to our routine to exit cleanly upon return.
-	defer close(doneCh)
+	// set a timeout on the request to the cache provider
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	logrus.Infof("processing cached objects in path %s", f.Namespace)
 
+	opts := minio.ListObjectsOptions{
+		Prefix:    f.Namespace,
+		Recursive: true,
+	}
 	// lists all objects matching the path
 	// in the specified bucket
-	objectCh := mc.ListObjectsV2(f.Root, f.Namespace, true, doneCh)
+	objectCh := mc.ListObjects(ctx, f.Root, opts)
 	for object := range objectCh {
 		// we got at least one object
 		objectsExist = true
@@ -65,14 +68,14 @@ func (f *Flush) Exec(mc *minio.Client) error {
 			logrus.Infof("    ├ '%s' flush age criteria met. removing object.", f.Age)
 
 			// remove the object from the bucket
-			err := mc.RemoveObject(f.Root, object.Key)
+			err := mc.RemoveObject(ctx, f.Root, object.Key, minio.RemoveObjectOptions{})
 			if err != nil {
 				return err
 			}
 
 			// verify that the object is gone, .RemoveObject fails silently
 			// if the supplied path leads to an object that doesn't exist
-			_, err = mc.StatObject(f.Root, object.Key, minio.StatObjectOptions{})
+			_, err = mc.StatObject(ctx, f.Root, object.Key, minio.StatObjectOptions{})
 			if err != nil {
 				logrus.Info("    ├ object successfully removed.")
 			} else {

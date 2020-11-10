@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/mholt/archiver"
-	"github.com/minio/minio-go/v6"
+	"github.com/minio/minio-go/v7"
 	"github.com/sirupsen/logrus"
 )
 
@@ -42,21 +42,21 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("getting object info on bucket %s from path: %s", r.Root, r.Namespace)
 
+	// set a timeout on the request to the cache provider
+	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
+	defer cancel()
+
 	// collect metadata on the object
-	ok, err := mc.StatObject(r.Root, r.Namespace, minio.StatObjectOptions{})
+	ok, err := mc.StatObject(ctx, r.Root, r.Namespace, minio.StatObjectOptions{})
 	if ok.Key == "" {
 		logrus.Error(err)
 		return nil
 	}
 
-	// set a timeout on the request to the cache provider
-	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
-	defer cancel()
-
 	logrus.Debugf("getting object in bucket %s from path: %s", r.Root, r.Namespace)
 
 	// retrieve the object in specified path of the bucket
-	reader, err := mc.GetObjectWithContext(ctx, r.Root, r.Namespace, minio.GetObjectOptions{})
+	reader, err := mc.GetObject(ctx, r.Root, r.Namespace, minio.GetObjectOptions{})
 	if err != nil {
 		return err
 	}
