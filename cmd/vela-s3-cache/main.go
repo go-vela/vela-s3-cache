@@ -229,7 +229,7 @@ func run(c *cli.Context) (err error) {
 		"code":     "https://github.com/go-vela/vela-s3-cache",
 		"docs":     "https://go-vela.github.io/docs/plugins/registry/s3-cache",
 		"registry": "https://hub.docker.com/r/target/vela-s3-cache",
-		"version":  version.New().Semantic(),
+		"version":  version.New().Canonical,
 	}).Info("Vela S3 Cache Plugin")
 
 	// create the plugin
