@@ -109,9 +109,6 @@ func TestS3Cache_Plugin_buildNamespace(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			path := buildNamespace(tC.repo, tC.prefix, tC.path, tC.filename)
-			if tC.want == "" && path == "." {
-				t.Error("should error on empty Namespace")
-			}
 
 			if path != tC.want {
 				t.Errorf("test name: %s\nwant: %s, got: %s", tC.desc, tC.want, path)
