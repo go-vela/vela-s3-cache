@@ -106,10 +106,10 @@ The following parameters are used to configure the `restore` action:
 
 The following parameters are used to configure the `rebuild` action:
 
-| Name       | Description                    | Required | Default      |
-| ---------- | ------------------------------ | -------- | ------------ |
-| `filename` | the name of the cache object   | `true`  | `archive.tgz` |
-| `timeout`  | the timeout for the call to s3 | `false`  | `10m`        |
+| Name       | Description                    | Required | Default       |
+| ---------- | ------------------------------ | -------- | ------------- |
+| `filename` | the name of the cache object   | `true`   | `archive.tgz` |
+| `timeout`  | the timeout for the call to s3 | `false`  | `10m`         |
 
 ### Flush
 
