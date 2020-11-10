@@ -34,7 +34,7 @@ type Rebuild struct {
 	Timeout time.Duration
 	// sets the file or directories locations to build your cache from
 	Mount []string
-	// will hold our final namespace to store the object at
+	// will hold our final namespace for the path to the objects
 	Namespace string
 }
 

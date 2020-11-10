@@ -19,14 +19,14 @@ const flushAction = "flush"
 type Flush struct {
 	// sets the name of the bucket
 	Root string
-	// sets the path prefix for which object(s) should be flushed
-	Prefix string
-	// sets path where the objects should be flushed
+	// sets path to the objects to be flushed
 	Path string
-	// will hold our final namespace to store the object at
-	Namespace string
+	// sets the path prefix for the object(s) to be flushed
+	Prefix string
 	// sets the age of the objects to flush
 	Age time.Duration
+	// will hold our final namespace for the path to the objects
+	Namespace string
 }
 
 // Exec formats and runs the actions for flushing a cache in s3.

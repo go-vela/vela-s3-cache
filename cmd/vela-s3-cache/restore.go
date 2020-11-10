@@ -24,15 +24,15 @@ const restoreAction = "restore"
 type Restore struct {
 	// sets the name of the bucket
 	Root string
-	// sets the path for where to store the object
+	// sets the path for where to retrieve the object from
+	Path string
+	// sets the path for where to retrieve the object from
 	Prefix string
 	// sets the name of the cache object
 	Filename string
-	// sets the path for where to store the object
-	Path string
 	// sets the timeout on the call to s3
 	Timeout time.Duration
-	// will hold our final namespace to store the object at
+	// will hold our final namespace for the path to the objects
 	Namespace string
 }
 

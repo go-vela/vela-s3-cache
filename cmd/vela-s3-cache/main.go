@@ -39,7 +39,7 @@ func main() {
 
 	app.Action = run
 	app.Compiled = time.Now()
-	// app.Version = version.New().Semantic()
+	app.Version = version.New().Semantic()
 
 	// Plugin Flags
 	// nolint:lll // not breaking lines to keep it consistent
@@ -229,7 +229,7 @@ func run(c *cli.Context) (err error) {
 		"code":     "https://github.com/go-vela/vela-s3-cache",
 		"docs":     "https://go-vela.github.io/docs/plugins/registry/s3-cache",
 		"registry": "https://hub.docker.com/r/target/vela-s3-cache",
-		"version":  version.New().Canonical,
+		"version":  version.New().Semantic(),
 	}).Info("Vela S3 Cache Plugin")
 
 	// create the plugin
