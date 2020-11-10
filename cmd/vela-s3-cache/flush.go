@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 	"time"
 
 	"github.com/minio/minio-go/v7"
@@ -99,17 +98,13 @@ func (f *Flush) Exec(mc *minio.Client) error {
 func (f *Flush) Configure(repo *Repo) error {
 	logrus.Trace("configuring flush action")
 
-	// set the path for where to look for objects
-	path := filepath.Join(f.Prefix, repo.Owner, repo.Name, f.Path)
-
-	if len(path) == 0 {
-		return fmt.Errorf("constructed path is empty")
-	}
+	// construct the object path
+	path := buildNamespace(repo, f.Prefix, f.Path, "")
 
 	logrus.Debugf("created bucket path %s", path)
 
-	// clean the path and store in Namespace
-	f.Namespace = filepath.Clean(path)
+	// store it in the namespace
+	f.Namespace = path
 
 	return nil
 }

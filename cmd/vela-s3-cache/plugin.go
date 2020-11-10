@@ -7,6 +7,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
 
 	"github.com/sirupsen/logrus"
 )
@@ -120,4 +121,18 @@ func (p *Plugin) Validate() error {
 			restoreAction,
 		)
 	}
+}
+
+// buildNamespace is a helper function to create a namespace
+// given a Repo object and path fragment inputs.
+func buildNamespace(r *Repo, prefix, path, filename string) string {
+	// set the default path for where to store the object
+	p := filepath.Join(prefix, r.Owner, r.Name, filename)
+
+	// Path was supplied and will override default
+	if len(path) > 0 {
+		p = filepath.Join(path, filename)
+	}
+
+	return filepath.Clean(p)
 }

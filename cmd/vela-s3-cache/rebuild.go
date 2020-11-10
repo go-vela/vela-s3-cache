@@ -94,17 +94,13 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 func (r *Rebuild) Configure(repo *Repo) error {
 	logrus.Trace("configuring rebuild action")
 
-	// set the path for where to store the object
-	path := filepath.Join(r.Prefix, repo.Owner, repo.Name, r.Path, r.Filename)
-
-	if len(path) == 0 {
-		return fmt.Errorf("constructed bucket path is empty")
-	}
+	// construct the object path
+	path := buildNamespace(repo, r.Prefix, r.Path, r.Filename)
 
 	logrus.Debugf("created bucket path %s", path)
 
-	// clean the path and store in Namespace
-	r.Namespace = filepath.Clean(path)
+	// store it in the namespace
+	r.Namespace = path
 
 	return nil
 }
