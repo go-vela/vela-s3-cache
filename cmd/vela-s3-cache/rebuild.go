@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -120,7 +119,7 @@ func (r *Rebuild) Validate() error {
 	}
 
 	// verify timeout is provided
-	if strings.EqualFold(r.Timeout.String(), "0s") {
+	if r.Timeout == 0 {
 		return fmt.Errorf("timeout must be greater than 0")
 	}
 

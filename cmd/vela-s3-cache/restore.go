@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/mholt/archiver"
@@ -148,7 +147,7 @@ func (r *Restore) Validate() error {
 	}
 
 	// verify timeout is provided
-	if strings.EqualFold(r.Timeout.String(), "0s") {
+	if r.Timeout == 0 {
 		return fmt.Errorf("timeout must be greater than 0")
 	}
 
