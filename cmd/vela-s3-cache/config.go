@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/minio/minio-go/v6"
-	"github.com/minio/minio-go/v6/pkg/credentials"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/sirupsen/logrus"
 )
 
@@ -63,7 +63,12 @@ func (c *Config) New() (*minio.Client, error) {
 		}
 	}
 
-	mc, err := minio.NewWithCredentials(endpoint, creds, useSSL, "")
+	opts := &minio.Options{
+		Creds:  creds,
+		Secure: useSSL,
+	}
+
+	mc, err := minio.New(endpoint, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -79,9 +84,9 @@ func (c *Config) New() (*minio.Client, error) {
 func (c *Config) Validate() error {
 	logrus.Trace("validating config plugin configuration")
 
-	// verify action is provided
-	if len(c.Action) == 0 {
-		return fmt.Errorf("no config action provided")
+	// verify server is provided
+	if len(c.Server) == 0 {
+		return fmt.Errorf("no cache server provided")
 	}
 
 	// verify access key is provided
@@ -92,6 +97,11 @@ func (c *Config) Validate() error {
 	// verify secret key is provided
 	if len(c.SecretKey) == 0 {
 		return fmt.Errorf("no secret key provided")
+	}
+
+	// verify action is provided
+	if len(c.Action) == 0 {
+		return fmt.Errorf("no config action provided")
 	}
 
 	return nil

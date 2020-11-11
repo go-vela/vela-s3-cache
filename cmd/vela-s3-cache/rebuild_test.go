@@ -15,10 +15,10 @@ func TestS3Cache_Rebuild_Validate(t *testing.T) {
 
 	r := &Rebuild{
 		Timeout:  timeout,
-		Root:     "bucket",
+		Bucket:   "bucket",
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
-		Mount:    []string{"/path/to/cache"},
+		Mount:    []string{"testdata/hello.txt"},
 	}
 
 	err := r.Validate()
@@ -27,7 +27,7 @@ func TestS3Cache_Rebuild_Validate(t *testing.T) {
 	}
 }
 
-func TestS3Cache_Rebuild_Validate_NoRoot(t *testing.T) {
+func TestS3Cache_Rebuild_Validate_NoBucket(t *testing.T) {
 	// setup types
 	timeout, _ := time.ParseDuration("10m")
 
@@ -35,7 +35,7 @@ func TestS3Cache_Rebuild_Validate_NoRoot(t *testing.T) {
 		Timeout:  timeout,
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
-		Mount:    []string{"/path/to/cache"},
+		Mount:    []string{"testdata/hello.txt"},
 	}
 
 	err := r.Validate()
@@ -50,9 +50,9 @@ func TestS3Cache_Rebuild_Validate_NoFilename(t *testing.T) {
 
 	r := &Rebuild{
 		Timeout: timeout,
-		Root:    "bucket",
+		Bucket:  "bucket",
 		Prefix:  "foo/bar",
-		Mount:   []string{"/path/to/cache"},
+		Mount:   []string{"testdata/hello.txt"},
 	}
 
 	err := r.Validate()
@@ -64,10 +64,10 @@ func TestS3Cache_Rebuild_Validate_NoFilename(t *testing.T) {
 func TestS3Cache_Rebuild_Validate_NoTimeout(t *testing.T) {
 	// setup types
 	r := &Rebuild{
-		Root:     "bucket",
+		Bucket:   "bucket",
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
-		Mount:    []string{"/path/to/cache"},
+		Mount:    []string{"testdata/hello.txt"},
 	}
 
 	err := r.Validate()
@@ -82,9 +82,27 @@ func TestS3Cache_Rebuild_Validate_NoMount(t *testing.T) {
 
 	r := &Rebuild{
 		Timeout:  timeout,
-		Root:     "bucket",
+		Bucket:   "bucket",
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
+	}
+
+	err := r.Validate()
+	if err == nil {
+		t.Errorf("Validate should have returned err")
+	}
+}
+
+func TestS3Cache_Rebuild_Validate_MissingMount(t *testing.T) {
+	// setup types
+	timeout, _ := time.ParseDuration("10m")
+
+	r := &Rebuild{
+		Timeout:  timeout,
+		Bucket:   "bucket",
+		Prefix:   "foo/bar",
+		Filename: "archive.tar",
+		Mount:    []string{"testdata/bye.txt"},
 	}
 
 	err := r.Validate()

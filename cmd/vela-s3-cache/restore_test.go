@@ -15,7 +15,7 @@ func TestS3Cache_Restore_Validate(t *testing.T) {
 
 	r := &Restore{
 		Timeout:  timeout,
-		Root:     "bucket",
+		Bucket:   "bucket",
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
 	}
@@ -26,7 +26,7 @@ func TestS3Cache_Restore_Validate(t *testing.T) {
 	}
 }
 
-func TestS3Cache_Restore_Validate_NoRoot(t *testing.T) {
+func TestS3Cache_Restore_Validate_NoBucket(t *testing.T) {
 	// setup types
 	timeout, _ := time.ParseDuration("10m")
 
@@ -48,7 +48,7 @@ func TestS3Cache_Restore_Validate_NoFilename(t *testing.T) {
 
 	r := &Restore{
 		Timeout: timeout,
-		Root:    "bucket",
+		Bucket:  "bucket",
 		Prefix:  "foo/bar",
 	}
 
@@ -62,7 +62,7 @@ func TestS3Cache_Restore_Validate_NoTimeout(t *testing.T) {
 	// setup types
 
 	r := &Restore{
-		Root:     "bucket",
+		Bucket:   "bucket",
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
 	}

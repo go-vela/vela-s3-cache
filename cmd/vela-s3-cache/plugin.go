@@ -7,6 +7,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
 
 	"github.com/sirupsen/logrus"
 )
@@ -17,37 +18,26 @@ var (
 	ErrInvalidAction = errors.New("invalid action provided")
 )
 
-type (
+// Plugin represents the required information for structs.
+type Plugin struct {
+	// config arguments loaded for the plugin
+	Config *Config
+	// flush arguments loaded for the plugin
+	Flush *Flush
+	// rebuild arguments loaded for the plugin
+	Rebuild *Rebuild
+	// restore arguments loaded for the plugin
+	Restore *Restore
+	// repo settings loaded for the plugin
+	Repo *Repo
+}
 
-	// Plugin represents the required information for structs
-	Plugin struct {
-		// config arguments loaded for the plugin
-		Config *Config
-		// flush arguments loaded for the plugin
-		Flush *Flush
-		// rebuild arguments loaded for the plugin
-		Rebuild *Rebuild
-		// restore arguments loaded for the plugin
-		Restore *Restore
-		// repo settings loaded for the plugin
-		Repo Repo
-	}
-
-	// Repo represents the available settings for repository
-	Repo struct {
-		Owner        string
-		Name         string
-		Branch       string
-		CommitBranch string
-	}
-)
-
-// Exec runs the plugin with the settings passed from user
+// Exec runs the plugin with the settings passed from user.
 func (p *Plugin) Exec() (err error) {
 	logrus.Info("s3 cache plugin starting...")
 
 	// create a minio client
-	logrus.Info("Creating an s3 client")
+	logrus.Info("creating an s3 client")
 
 	mc, err := p.Config.New()
 	if err != nil {
@@ -89,12 +79,18 @@ func (p *Plugin) Validate() error {
 		return err
 	}
 
+	// validate repo configuration
+	err = p.Repo.Validate()
+	if err != nil {
+		return err
+	}
+
 	// validate action specific configuration
 	switch p.Config.Action {
 	case flushAction:
 		err := p.Flush.Configure(p.Repo)
 		if err != nil {
-			return nil
+			return err
 		}
 
 		// validate flush action
@@ -102,7 +98,7 @@ func (p *Plugin) Validate() error {
 	case rebuildAction:
 		err := p.Rebuild.Configure(p.Repo)
 		if err != nil {
-			return nil
+			return err
 		}
 
 		// validate rebuild action
@@ -110,7 +106,7 @@ func (p *Plugin) Validate() error {
 	case restoreAction:
 		err := p.Restore.Configure(p.Repo)
 		if err != nil {
-			return nil
+			return err
 		}
 
 		// validate restore action
@@ -125,4 +121,18 @@ func (p *Plugin) Validate() error {
 			restoreAction,
 		)
 	}
+}
+
+// buildNamespace is a helper function to create a namespace
+// given a Repo object and path fragment inputs.
+func buildNamespace(r *Repo, prefix, path, filename string) string {
+	// set the default path for where to store the object
+	p := filepath.Join(prefix, r.Owner, r.Name, filename)
+
+	// Path was supplied and will override default
+	if len(path) > 0 {
+		p = filepath.Join(path, filename)
+	}
+
+	return filepath.Clean(p)
 }

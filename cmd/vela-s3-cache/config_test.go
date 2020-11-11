@@ -18,6 +18,7 @@ func TestS3Cache_Config_Validate(t *testing.T) {
 		Action:    "flush",
 		AccessKey: "123456",
 		SecretKey: "654321",
+		Server:    "https://server",
 	}
 
 	err := c.Validate()
@@ -26,11 +27,26 @@ func TestS3Cache_Config_Validate(t *testing.T) {
 	}
 }
 
+func TestS3Cache_Config_Validate_NoServer(t *testing.T) {
+	// setup types
+	c := &Config{
+		Action:    "flush",
+		AccessKey: "123456",
+		SecretKey: "654321",
+	}
+
+	err := c.Validate()
+	if err == nil {
+		t.Errorf("Validate should have returned err")
+	}
+}
+
 func TestS3Cache_Config_Validate_NoAction(t *testing.T) {
 	// setup types
 	c := &Config{
 		AccessKey: "123456",
 		SecretKey: "654321",
+		Server:    "https://server",
 	}
 
 	err := c.Validate()
@@ -44,6 +60,7 @@ func TestS3Cache_Config_Validate_NoAccessKey(t *testing.T) {
 	c := &Config{
 		Action:    "flush",
 		SecretKey: "654321",
+		Server:    "https://server",
 	}
 
 	err := c.Validate()
@@ -57,6 +74,7 @@ func TestS3Cache_Config_Validate_NoSecretKey(t *testing.T) {
 	c := &Config{
 		Action:    "flush",
 		AccessKey: "123456",
+		Server:    "https://server",
 	}
 
 	err := c.Validate()
