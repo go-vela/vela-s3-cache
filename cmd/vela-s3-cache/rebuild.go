@@ -23,7 +23,7 @@ const rebuildAction = "rebuild"
 // Rebuild represents the plugin configuration for rebuild information.
 type Rebuild struct {
 	// sets the name of the bucket
-	Root string
+	Bucket string
 	// sets the path for where to store the object
 	Path string
 	// sets the prefix for where to store the object
@@ -71,7 +71,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
 	defer cancel()
 
-	logrus.Debugf("putting archive %s in bucket %s in path: %s", f, r.Root, r.Namespace)
+	logrus.Debugf("putting archive %s in bucket %s in path: %s", f, r.Bucket, r.Namespace)
 
 	// create an options object for the upload
 	mObj := minio.PutObjectOptions{
@@ -79,7 +79,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	}
 
 	// upload the object to the specified location in the bucket
-	n, err := mc.PutObject(ctx, r.Root, r.Namespace, obj, -1, mObj)
+	n, err := mc.PutObject(ctx, r.Bucket, r.Namespace, obj, -1, mObj)
 	if err != nil {
 		return err
 	}
@@ -109,9 +109,9 @@ func (r *Rebuild) Configure(repo *Repo) error {
 func (r *Rebuild) Validate() error {
 	logrus.Trace("validating rebuild action configuration")
 
-	// verify root is provided
-	if len(r.Root) == 0 {
-		return fmt.Errorf("no root provided")
+	// verify bucket is provided
+	if len(r.Bucket) == 0 {
+		return fmt.Errorf("no bucket provided")
 	}
 
 	// verify filename is provided

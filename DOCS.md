@@ -88,7 +88,7 @@ The following parameters can used to configure all image actions:
 | `server`    | s3 instance to communicate with      | `true`   | `N/A`   |
 | `access_key`| access key for communication with s3 | `true`   | `N/A`   |
 | `secret_key`| secret key for communication with s3 | `true`   | `N/A`   |
-| `root`      | name of the s3 bucket                | `true`   | `N/A`   |
+| `bucket`    | name of the s3 bucket                | `true`   | `N/A`   |
 | `prefix`    | path prefix for the object(s)        | `false`  | `N/A`   |
 | `path`      | custom path for the object(s)        | `false`  | `N/A`   |
 

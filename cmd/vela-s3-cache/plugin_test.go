@@ -27,17 +27,17 @@ func TestS3Cache_Plugin_Validate(t *testing.T) {
 			BuildBranch: "main",
 		},
 		Flush: &Flush{
-			Root: "bucket",
+			Bucket: "bucket",
 		},
 		Rebuild: &Rebuild{
 			Timeout:  timeout,
-			Root:     "bucket",
+			Bucket:   "bucket",
 			Filename: "archive.tar",
 			Mount:    []string{"/path/to/cache"},
 		},
 		Restore: &Restore{
 			Timeout:  timeout,
-			Root:     "bucket",
+			Bucket:   "bucket",
 			Filename: "archive.tar",
 		},
 	}

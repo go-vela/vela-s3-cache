@@ -22,7 +22,7 @@ const restoreAction = "restore"
 // Restore represents the plugin configuration for Restore information.
 type Restore struct {
 	// sets the name of the bucket
-	Root string
+	Bucket string
 	// sets the path for where to retrieve the object from
 	Path string
 	// sets the path for where to retrieve the object from
@@ -39,23 +39,23 @@ type Restore struct {
 func (r *Restore) Exec(mc *minio.Client) error {
 	logrus.Trace("running restore with provided configuration")
 
-	logrus.Debugf("getting object info on bucket %s from path: %s", r.Root, r.Namespace)
+	logrus.Debugf("getting object info on bucket %s from path: %s", r.Bucket, r.Namespace)
 
 	// set a timeout on the request to the cache provider
 	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
 	defer cancel()
 
 	// collect metadata on the object
-	ok, err := mc.StatObject(ctx, r.Root, r.Namespace, minio.StatObjectOptions{})
+	ok, err := mc.StatObject(ctx, r.Bucket, r.Namespace, minio.StatObjectOptions{})
 	if ok.Key == "" {
 		logrus.Error(err)
 		return nil
 	}
 
-	logrus.Debugf("getting object in bucket %s from path: %s", r.Root, r.Namespace)
+	logrus.Debugf("getting object in bucket %s from path: %s", r.Bucket, r.Namespace)
 
 	// retrieve the object in specified path of the bucket
-	reader, err := mc.GetObject(ctx, r.Root, r.Namespace, minio.GetObjectOptions{})
+	reader, err := mc.GetObject(ctx, r.Bucket, r.Namespace, minio.GetObjectOptions{})
 	if err != nil {
 		return err
 	}
@@ -137,9 +137,9 @@ func (r *Restore) Configure(repo *Repo) error {
 func (r *Restore) Validate() error {
 	logrus.Trace("validating restore action configuration")
 
-	// verify root is provided
-	if len(r.Root) == 0 {
-		return fmt.Errorf("no root provided")
+	// verify bucket is provided
+	if len(r.Bucket) == 0 {
+		return fmt.Errorf("no bucket provided")
 	}
 
 	// verify filename is provided

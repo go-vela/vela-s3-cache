@@ -11,7 +11,7 @@ import (
 func TestS3Cache_Flush_Validate(t *testing.T) {
 	// setup types
 	f := &Flush{
-		Root: "bucket",
+		Bucket: "bucket",
 	}
 
 	err := f.Validate()
@@ -20,7 +20,7 @@ func TestS3Cache_Flush_Validate(t *testing.T) {
 	}
 }
 
-func TestS3Cache_Flush_Validate_NoRoot(t *testing.T) {
+func TestS3Cache_Flush_Validate_NoBucket(t *testing.T) {
 	// setup types
 	f := &Flush{}
 

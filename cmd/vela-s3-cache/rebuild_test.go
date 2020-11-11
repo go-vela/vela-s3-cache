@@ -15,7 +15,7 @@ func TestS3Cache_Rebuild_Validate(t *testing.T) {
 
 	r := &Rebuild{
 		Timeout:  timeout,
-		Root:     "bucket",
+		Bucket:   "bucket",
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
 		Mount:    []string{"testdata/hello.txt"},
@@ -27,7 +27,7 @@ func TestS3Cache_Rebuild_Validate(t *testing.T) {
 	}
 }
 
-func TestS3Cache_Rebuild_Validate_NoRoot(t *testing.T) {
+func TestS3Cache_Rebuild_Validate_NoBucket(t *testing.T) {
 	// setup types
 	timeout, _ := time.ParseDuration("10m")
 
@@ -50,7 +50,7 @@ func TestS3Cache_Rebuild_Validate_NoFilename(t *testing.T) {
 
 	r := &Rebuild{
 		Timeout: timeout,
-		Root:    "bucket",
+		Bucket:  "bucket",
 		Prefix:  "foo/bar",
 		Mount:   []string{"testdata/hello.txt"},
 	}
@@ -64,7 +64,7 @@ func TestS3Cache_Rebuild_Validate_NoFilename(t *testing.T) {
 func TestS3Cache_Rebuild_Validate_NoTimeout(t *testing.T) {
 	// setup types
 	r := &Rebuild{
-		Root:     "bucket",
+		Bucket:   "bucket",
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
 		Mount:    []string{"testdata/hello.txt"},
@@ -82,7 +82,7 @@ func TestS3Cache_Rebuild_Validate_NoMount(t *testing.T) {
 
 	r := &Rebuild{
 		Timeout:  timeout,
-		Root:     "bucket",
+		Bucket:   "bucket",
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
 	}
@@ -99,7 +99,7 @@ func TestS3Cache_Rebuild_Validate_MissingMount(t *testing.T) {
 
 	r := &Rebuild{
 		Timeout:  timeout,
-		Root:     "bucket",
+		Bucket:   "bucket",
 		Prefix:   "foo/bar",
 		Filename: "archive.tar",
 		Mount:    []string{"testdata/bye.txt"},

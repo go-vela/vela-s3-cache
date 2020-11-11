@@ -62,9 +62,9 @@ func main() {
 		// Cache Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ROOT"},
-			FilePath: string("/vela/parameters/s3_cache/root,/vela/secrets/s3_cache/root"),
-			Name:     "root",
+			EnvVars:  []string{"PARAMETER_BUCKET"},
+			FilePath: string("/vela/parameters/s3_cache/bucket,/vela/secrets/s3_cache/bucket"),
+			Name:     "bucket",
 			Usage:    "name of the s3 bucket",
 		},
 		&cli.StringFlag{
@@ -229,7 +229,6 @@ func run(c *cli.Context) (err error) {
 		"code":     "https://github.com/go-vela/vela-s3-cache",
 		"docs":     "https://go-vela.github.io/docs/plugins/registry/s3-cache",
 		"registry": "https://hub.docker.com/r/target/vela-s3-cache",
-		"version":  version.New().Canonical,
 	}).Info("Vela S3 Cache Plugin")
 
 	// create the plugin
@@ -248,14 +247,14 @@ func run(c *cli.Context) (err error) {
 		},
 		// flush configuration
 		Flush: &Flush{
-			Root:   c.String("root"),
+			Bucket: c.String("bucket"),
 			Age:    c.Duration("age"),
 			Path:   c.String("path"),
 			Prefix: c.String("prefix"),
 		},
 		// rebuild configuration
 		Rebuild: &Rebuild{
-			Root:     c.String("root"),
+			Bucket:   c.String("bucket"),
 			Filename: c.String("filename"),
 			Timeout:  c.Duration("timeout"),
 			Mount:    c.StringSlice("mount"),
@@ -264,7 +263,7 @@ func run(c *cli.Context) (err error) {
 		},
 		// restore configuration
 		Restore: &Restore{
-			Root:     c.String("root"),
+			Bucket:   c.String("bucket"),
 			Filename: c.String("filename"),
 			Timeout:  c.Duration("timeout"),
 			Path:     c.String("path"),

@@ -18,7 +18,7 @@ const flushAction = "flush"
 // Flush represents the plugin configuration for flush information.
 type Flush struct {
 	// sets the name of the bucket
-	Root string
+	Bucket string
 	// sets path to the objects to be flushed
 	Path string
 	// sets the path prefix for the object(s) to be flushed
@@ -48,7 +48,7 @@ func (f *Flush) Exec(mc *minio.Client) error {
 	}
 	// lists all objects matching the path
 	// in the specified bucket
-	objectCh := mc.ListObjects(ctx, f.Root, opts)
+	objectCh := mc.ListObjects(ctx, f.Bucket, opts)
 	for object := range objectCh {
 		// we got at least one object
 		objectsExist = true
@@ -67,14 +67,14 @@ func (f *Flush) Exec(mc *minio.Client) error {
 			logrus.Infof("    ├ '%s' flush age criteria met. removing object.", f.Age)
 
 			// remove the object from the bucket
-			err := mc.RemoveObject(ctx, f.Root, object.Key, minio.RemoveObjectOptions{})
+			err := mc.RemoveObject(ctx, f.Bucket, object.Key, minio.RemoveObjectOptions{})
 			if err != nil {
 				return err
 			}
 
 			// verify that the object is gone, .RemoveObject fails silently
 			// if the supplied path leads to an object that doesn't exist
-			_, err = mc.StatObject(ctx, f.Root, object.Key, minio.StatObjectOptions{})
+			_, err = mc.StatObject(ctx, f.Bucket, object.Key, minio.StatObjectOptions{})
 			if err != nil {
 				logrus.Info("    ├ object successfully removed.")
 			} else {
@@ -113,9 +113,9 @@ func (f *Flush) Configure(repo *Repo) error {
 func (f *Flush) Validate() error {
 	logrus.Trace("validating flush action configuration")
 
-	// verify root is provided
-	if len(f.Root) == 0 {
-		return fmt.Errorf("no root provided")
+	// verify bucket is provided
+	if len(f.Bucket) == 0 {
+		return fmt.Errorf("no bucket provided")
 	}
 
 	return nil
