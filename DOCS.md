@@ -117,7 +117,7 @@ The following parameters are used to configure the `flush` action:
 
 | Name  | Description                                             | Required | Default |
 | ----- | ------------------------------------------------------- | -------- | ------- |
-| `age` | delete the objects past a specific age (i.e. 60m, 7d)   | `false`  | `14d`   |
+| `age` | delete the objects past a specific age (i.e. 60m, 8h)   | `false`  | `336h   |
 
 ## Template
 
