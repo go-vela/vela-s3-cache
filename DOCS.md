@@ -19,7 +19,7 @@ steps:
     pull: always
     parameters:
       action: restore
-      root: mybucket
+      bucket: mybucket
       server: mybucket.s3-us-west-2.amazonaws.com
 ```
 
@@ -32,7 +32,7 @@ steps:
     pull: always
     parameters:
       action: rebuild
-      root: mybucket
+      bucket: mybucket
       server: mybucket.s3-us-west-2.amazonaws.com
       mount:
         - .gradle
@@ -47,7 +47,7 @@ steps:
     pull: always
     parameters:
       action: flush
-      root: mybucket
+      bucket: mybucket
       server: mybucket.s3-us-west-2.amazonaws.com
 ```
 
@@ -65,7 +65,7 @@ steps:
 +   secrets: [ cache_access_key, cache_secret_key ]
     parameters:
       action: restore
-      root: mybucket
+      bucket: mybucket
       server: mybucket.s3-us-west-2.amazonaws.com
 -     access_key: AKIAIOSFODNN7EXAMPLE
 -     secret_key: 123456789QWERTYEXAMPLE
@@ -77,7 +77,7 @@ steps:
 
 * the plugin supports reading all parameters via environment variables or files
 * values set from a file take precedence over values set from the environment
-* `root` bucket is expected to be created beforehand
+* `bucket` the actual s3 bucket is expected to be created beforehand
 
 The following parameters can used to configure all image actions:
 
