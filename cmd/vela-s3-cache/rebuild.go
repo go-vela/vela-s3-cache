@@ -57,15 +57,6 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("archive %s created", f)
 
-	logrus.Debugf("opening artifact %s for reading", f)
-
-	obj, err := os.Open(f)
-	if err != nil {
-		return err
-	}
-
-	logrus.Debugf("archive %s opened for reading", f)
-
 	// set a timeout on the request to the cache provider
 	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
 	defer cancel()
@@ -78,7 +69,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	}
 
 	// upload the object to the specified location in the bucket
-	n, err := mc.PutObject(ctx, r.Bucket, r.Namespace, obj, -1, mObj)
+	n, err := mc.FPutObject(ctx, r.Bucket, r.Namespace, f, mObj)
 	if err != nil {
 		return err
 	}
