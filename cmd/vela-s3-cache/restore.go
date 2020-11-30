@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
 	"os"
 	"time"
 
@@ -54,39 +53,14 @@ func (r *Restore) Exec(mc *minio.Client) error {
 	logrus.Debugf("getting object in bucket %s from path: %s", r.Bucket, r.Namespace)
 
 	// retrieve the object in specified path of the bucket
-	reader, err := mc.GetObject(ctx, r.Bucket, r.Namespace, minio.GetObjectOptions{})
+	err = mc.FGetObject(ctx, r.Bucket, r.Namespace, r.Filename, minio.GetObjectOptions{})
 	if err != nil {
-		return err
-	}
-	defer reader.Close()
-
-	logrus.Debugf("creating file %s on system", r.Filename)
-
-	// create a a file to save the object to
-	localFile, err := os.Create(r.Filename)
-	if err != nil {
-		return err
-	}
-	defer localFile.Close()
-
-	logrus.Debugf("get object of file %s", r.Filename)
-
-	// get information on the object pulled down from the s3 store
-	stat, err := reader.Stat()
-	if err != nil {
-		return err
-	}
-
-	logrus.Debugf("copy object data to local file %s", r.Filename)
-
-	// copy the object contents to the file created on system
-	if _, err := io.CopyN(localFile, reader, stat.Size); err != nil {
 		return err
 	}
 
 	logrus.Infof("copied %s to local filesystem", r.Filename)
 
-	logrus.Debug("get current working directory")
+	logrus.Debug("getting current working directory")
 
 	// grab the current working directory for unpacking the object
 	pwd, err := os.Getwd()
