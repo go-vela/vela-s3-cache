@@ -17,8 +17,6 @@ import (
 type Config struct {
 	// action to perform against the s3 instance
 	Action              string
-	CaCert              string
-	CaCertPath          string
 	Server              string
 	AcceleratedEndpoint string
 	AccessKey           string
