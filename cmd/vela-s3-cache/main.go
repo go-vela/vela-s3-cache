@@ -46,15 +46,15 @@ func main() {
 	app.Flags = []cli.Flag{
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "VELA_LOG_LEVEL", "ARTIFACTORY_LOG_LEVEL"},
-			FilePath: string("/vela/parameters/s3_cache/log_level,/vela/secrets/s3_cache/log_level"),
+			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "S3_CACHE_LOG_LEVEL"},
+			FilePath: "/vela/parameters/s3-cache/log_level,/vela/secrets/s3-cache/log_level",
 			Name:     "log.level",
 			Usage:    "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
 			Value:    "info",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ACTION", "CONFIG_ACTION", "ARTIFACTORY_ACTION"},
-			FilePath: string("/vela/parameters/s3_cache/config/action,/vela/secrets/s3_cache/config/action"),
+			EnvVars:  []string{"PARAMETER_ACTION", "S3_CACHE_ACTION"},
+			FilePath: "/vela/parameters/s3-cache/action,/vela/secrets/s3-cache/action",
 			Name:     "config.action",
 			Usage:    "action to perform against the s3 cache instance",
 		},
@@ -62,129 +62,120 @@ func main() {
 		// Cache Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_BUCKET"},
-			FilePath: string("/vela/parameters/s3_cache/bucket,/vela/secrets/s3_cache/bucket"),
+			EnvVars:  []string{"PARAMETER_BUCKET", "S3_CACHE_BUCKET"},
+			FilePath: "/vela/parameters/s3-cache/bucket,/vela/secrets/s3-cache/bucket",
 			Name:     "bucket",
 			Usage:    "name of the s3 bucket",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_PREFIX"},
-			FilePath: string("/vela/parameters/s3_cache/prefix,/vela/secrets/s3_cache/prefix"),
+			EnvVars:  []string{"PARAMETER_PREFIX", "S3_CACHE_PREFIX"},
+			FilePath: "/vela/parameters/s3-cache/prefix,/vela/secrets/s3-cache/prefix",
 			Name:     "prefix",
 			Usage:    "path prefix for all cache default paths",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_FILENAME"},
-			FilePath: string("/vela/parameters/s3_cache/filename,/vela/secrets/s3_cache/filename"),
+			EnvVars:  []string{"PARAMETER_FILENAME", "S3_CACHE_FILENAME"},
+			FilePath: "/vela/parameters/s3-cache/filename,/vela/secrets/s3-cache/filename",
 			Name:     "filename",
 			Usage:    "Filename for the item place in the cache",
 			Value:    "archive.tgz",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_PATH"},
-			FilePath: string("/vela/parameters/s3_cache/path,/vela/secrets/s3_cache/path"),
+			EnvVars:  []string{"PARAMETER_PATH", "S3_CACHE_PATH"},
+			FilePath: "/vela/parameters/s3-cache/path,/vela/secrets/s3-cache/path",
 			Name:     "path",
 			Usage:    "path to store the cache file",
 		},
-		&cli.StringSliceFlag{
-			EnvVars:  []string{"PARAMETER_MOUNT"},
-			FilePath: string("/vela/parameters/s3_cache/mount,/vela/secrets/s3_cache/mount"),
-			Name:     "mount",
-			Usage:    "list of files/directories to cache",
-		},
 		&cli.DurationFlag{
-			EnvVars:  []string{"PARAMETER_FLUSH_AGE"},
-			FilePath: string("/vela/parameters/s3_cache/age,/vela/secrets/s3_cache/age"),
-			Name:     "age",
-			Usage:    "flush cache files older than # days",
-			Value:    14 * 24 * time.Hour,
-		},
-		&cli.DurationFlag{
-			EnvVars:  []string{"PARAMETER_TIMEOUT"},
-			FilePath: string("/vela/parameters/s3_cache/timeout,/vela/secrets/s3_cache/timeout"),
+			EnvVars:  []string{"PARAMETER_TIMEOUT", "S3_CACHE_TIMEOUT"},
+			FilePath: "/vela/parameters/s3-cache/timeout,/vela/secrets/s3-cache/timeout",
 			Name:     "timeout",
 			Usage:    "Default timeout for cache requests",
 			Value:    10 * time.Minute,
 		},
 
+		// Flush Flags
+
+		&cli.DurationFlag{
+			EnvVars:  []string{"PARAMETER_AGE", "S3_CACHE_AGE"},
+			FilePath: "/vela/parameters/s3-cache/age,/vela/secrets/s3-cache/age",
+			Name:     "flush.age",
+			Usage:    "flush cache files older than # days",
+			Value:    14 * 24 * time.Hour,
+		},
+
+		// Rebuild Flags
+
+		&cli.StringSliceFlag{
+			EnvVars:  []string{"PARAMETER_MOUNT", "S3_CACHE_MOUNT"},
+			FilePath: "/vela/parameters/s3-cache/mount,/vela/secrets/s3-cache/mount",
+			Name:     "rebuild.mount",
+			Usage:    "list of files/directories to cache",
+		},
+
 		// S3 Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SERVER", "PARAMETER_ENDPOINT", "CACHE_S3_ENDPOINT", "CACHE_S3_SERVER", "S3_ENDPOINT"},
-			FilePath: string("/vela/parameters/s3_cache/config/server,/vela/secrets/s3_cache/config/server"),
+			EnvVars:  []string{"PARAMETER_SERVER", "S3_CACHE_SERVER"},
+			FilePath: "/vela/parameters/s3-cache/server,/vela/secrets/s3-cache/server",
 			Name:     "config.server",
 			Usage:    "s3 server to store the cache",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ACCELERATED_ENDPOINT", "CACHE_S3_ACCELERATED_ENDPOINT"},
-			FilePath: string("/vela/parameters/s3_cache/config/accelerated_endpoint,/vela/secrets/s3_cache/config/accelerated_endpoint"),
-			Name:     "config.accelerated-endpoint",
+			EnvVars:  []string{"PARAMETER_ACCELERATED_ENDPOINT", "S3_CACHE_ACCELERATED_ENDPOINT"},
+			FilePath: "/vela/parameters/s3-cache/accelerated_endpoint,/vela/secrets/s3-cache/accelerated_endpoint",
+			Name:     "config.accelerated_endpoint",
 			Usage:    "s3 accelerated endpoint",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ACCESS_KEY", "CACHE_S3_ACCESS_KEY", "AWS_ACCESS_KEY_ID"},
-			FilePath: string("/vela/parameters/s3_cache/config/access_key,/vela/secrets/s3_cache/config/access_key"),
-			Name:     "config.access-key",
+			EnvVars:  []string{"PARAMETER_ACCESS_KEY", "S3_CACHE_ACCESS_KEY", "AWS_ACCESS_KEY_ID"},
+			FilePath: "/vela/parameters/s3-cache/access_key,/vela/secrets/s3-cache/access_key",
+			Name:     "config.access_key",
 			Usage:    "s3 access key for authentication to server",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SECRET_KEY", "CACHE_S3_SECRET_KEY", "AWS_SECRET_ACCESS_KEY"},
-			FilePath: string("/vela/parameters/s3_cache/config/secret_key,/vela/secrets/s3_cache/config/secret_key"),
-			Name:     "config.secret-key",
+			EnvVars:  []string{"PARAMETER_SECRET_KEY", "S3_CACHE_SECRET_KEY", "AWS_SECRET_ACCESS_KEY"},
+			FilePath: "/vela/parameters/s3-cache/secret_key,/vela/secrets/s3-cache/secret_key",
+			Name:     "config.secret_key",
 			Usage:    "s3 secret key for authentication to server",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SESSION_TOKEN", "CACHE_S3_SESSION_TOKEN", "AWS_SESSION_TOKEN"},
-			FilePath: string("/vela/parameters/s3_cache/config/session_token,/vela/secrets/s3_cache/config/session_token"),
-			Name:     "config.session-token",
+			EnvVars:  []string{"PARAMETER_SESSION_TOKEN", "S3_CACHE_SESSION_TOKEN", "AWS_SESSION_TOKEN"},
+			FilePath: "/vela/parameters/s3-cache/session_token,/vela/secrets/s3-cache/session_token",
+			Name:     "config.session_token",
 			Usage:    "s3 session token",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_REGION", "CACHE_S3_REGION"},
-			FilePath: string("/vela/parameters/s3_cache/config/region,/vela/secrets/s3_cache/config/region"),
+			EnvVars:  []string{"PARAMETER_REGION", "S3_CACHE_REGION"},
+			FilePath: "/vela/parameters/s3-cache/region,/vela/secrets/s3-cache/region",
 			Name:     "config.region",
 			Usage:    "s3 region for the region of the bucket",
-		},
-		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_CA_CERT", "CACHE_S3_CA_CERT"},
-			FilePath: string("/vela/parameters/s3_cache/config/ca_cert,/vela/secrets/s3_cache/config/ca_cert"),
-			Name:     "config.ca-cert",
-			Usage:    "ca cert to connect to s3 server",
-		},
-		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_CA_CERT_PATH", "CACHE_S3_CA_CERT_PATH"},
-			FilePath: string("/vela/parameters/s3_cache/config/ca_cert_path,/vela/secrets/s3_cache/config/ca_cert_path"),
-			Name:     "config.ca-cert-path",
-			Usage:    "location of the ca cert to connect to s3 server",
-			Value:    "/etc/ssl/certs/ca-certificates.crt",
 		},
 
 		// Build information (for setting defaults)
 		&cli.StringFlag{
-			EnvVars:  []string{"VELA_REPO_ORG", "REPOSITORY_ORG"},
-			FilePath: string("/vela/parameters/s3_cache/repo/owner,/vela/secrets/s3_cache/repo/owner"),
-			Name:     "repo.owner",
-			Usage:    "repository owner",
+			EnvVars:  []string{"PARAMETER_ORG", "VELA_REPO_ORG"},
+			FilePath: "/vela/parameters/s3-cache/org,/vela/secrets/s3-cache/org",
+			Name:     "repo.org",
+			Usage:    "repository org",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"VELA_REPO_NAME", "REPOSITORY_NAME"},
-			FilePath: string("/vela/parameters/s3_cache/repo/name,/vela/secrets/s3_cache/repo/name"),
+			EnvVars:  []string{"PARAMETER_REPO", "VELA_REPO_NAME"},
+			FilePath: "/vela/parameters/s3-cache/repo,/vela/secrets/s3-cache/repo",
 			Name:     "repo.name",
 			Usage:    "repository name",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"VELA_REPO_BRANCH", "REPOSITORY_BRANCH"},
-			FilePath: string("/vela/parameters/s3_cache/repo/branch,/vela/secrets/s3_cache/repo/branch"),
+			EnvVars:  []string{"PARAMETER_REPO_BRANCH", "VELA_REPO_BRANCH"},
+			FilePath: "/vela/parameters/s3-cache/repo_branch,/vela/secrets/s3-cache/repo_branch",
 			Name:     "repo.branch",
-			Usage:    "repository default branch",
-			Value:    "main",
+			Usage:    "default branch for the repository",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"VELA_BUILD_BRANCH", "REPOSITORY_BUILD_BRANCH"},
-			FilePath: string("/vela/parameters/s3_cache/repo/branch,/vela/secrets/s3_cache/repo/branch"),
+			EnvVars:  []string{"PARAMETER_BUILD_BRANCH", "VELA_BUILD_BRANCH"},
+			FilePath: "/vela/parameters/s3-cache/build_branch,/vela/secrets/s3-cache/repo/build_branch",
 			Name:     "repo.build.branch",
 			Usage:    "git build branch",
-			Value:    "main",
 		},
 	}
 
@@ -237,18 +228,16 @@ func run(c *cli.Context) (err error) {
 		Config: &Config{
 			Action:              c.String("config.action"),
 			Server:              c.String("config.server"),
-			AcceleratedEndpoint: c.String("config.accelerated-endpoint"),
-			AccessKey:           c.String("config.access-key"),
-			SecretKey:           c.String("config.secret-key"),
-			SessionToken:        c.String("session-token"),
+			AcceleratedEndpoint: c.String("config.accelerated_endpoint"),
+			AccessKey:           c.String("config.access_key"),
+			SecretKey:           c.String("config.secret_key"),
+			SessionToken:        c.String("config.session_token"),
 			Region:              c.String("config.region"),
-			CaCert:              c.String("config.ca-cert"),
-			CaCertPath:          c.String("config.ca-cert-path"),
 		},
 		// flush configuration
 		Flush: &Flush{
 			Bucket: c.String("bucket"),
-			Age:    c.Duration("age"),
+			Age:    c.Duration("flush.age"),
 			Path:   c.String("path"),
 			Prefix: c.String("prefix"),
 		},
@@ -257,7 +246,7 @@ func run(c *cli.Context) (err error) {
 			Bucket:   c.String("bucket"),
 			Filename: c.String("filename"),
 			Timeout:  c.Duration("timeout"),
-			Mount:    c.StringSlice("mount"),
+			Mount:    c.StringSlice("rebuild.mount"),
 			Path:     c.String("path"),
 			Prefix:   c.String("prefix"),
 		},
@@ -271,7 +260,7 @@ func run(c *cli.Context) (err error) {
 		},
 		// repository configuration from environment
 		Repo: &Repo{
-			Owner:       c.String("repo.owner"),
+			Owner:       c.String("repo.org"),
 			Name:        c.String("repo.name"),
 			Branch:      c.String("repo.branch"),
 			BuildBranch: c.String("repo.build.branch"),
