@@ -170,12 +170,14 @@ func main() {
 			FilePath: "/vela/parameters/s3-cache/repo_branch,/vela/secrets/s3-cache/repo_branch",
 			Name:     "repo.branch",
 			Usage:    "default branch for the repository",
+			Value:    "main",
 		},
 		&cli.StringFlag{
 			EnvVars:  []string{"PARAMETER_BUILD_BRANCH", "VELA_BUILD_BRANCH"},
 			FilePath: "/vela/parameters/s3-cache/build_branch,/vela/secrets/s3-cache/repo/build_branch",
 			Name:     "repo.build.branch",
 			Usage:    "git build branch",
+			Value:    "main",
 		},
 	}
 
