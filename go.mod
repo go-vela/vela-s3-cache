@@ -12,7 +12,7 @@ require (
 	github.com/google/go-cmp v0.5.0 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/mholt/archiver v3.1.1+incompatible
-	github.com/minio/minio-go/v7 v7.0.6
+	github.com/minio/minio-go/v7 v7.0.7
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.5.1 // indirect
