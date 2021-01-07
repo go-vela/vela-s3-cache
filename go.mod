@@ -3,7 +3,7 @@ module github.com/go-vela/vela-s3-cache
 go 1.13
 
 require (
-	github.com/Masterminds/semver v1.5.0
+	github.com/Masterminds/semver/v3/v3 v3.1.1
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frankban/quicktest v1.7.2 // indirect
