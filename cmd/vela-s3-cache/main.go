@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Target Brands, Inc. All rights reserved.
+// Copyright (c) 2021 Target Brands, Inc. All rights reserved.
 //
 // Use of this source code is governed by the LICENSE file in this repository.
 
@@ -27,7 +27,7 @@ func main() {
 	app.Name = "vela-s3-cache"
 	app.HelpName = "vela-s3-cache"
 	app.Usage = "Vela S3 cache plugin for managing a build cache in S3"
-	app.Copyright = "Copyright (c) 2020 Target Brands, Inc. All rights reserved."
+	app.Copyright = "Copyright (c) 2021 Target Brands, Inc. All rights reserved."
 	app.Authors = []*cli.Author{
 		{
 			Name:  "Vela Admins",
