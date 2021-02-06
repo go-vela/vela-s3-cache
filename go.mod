@@ -19,4 +19,4 @@ require (
 	github.com/urfave/cli/v2 v2.3.0
 )
 
-replace github.com/mholt/archiver => github.com/go-vela/archiver v1.1.3-0.20200811184543-d2452770f58c
+replace github.com/mholt/archiver => /v3github.com/go-vela/archiver/v3 v3.3.0
