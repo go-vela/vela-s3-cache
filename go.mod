@@ -8,7 +8,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/go-vela/archiver v2.1.0+incompatible // indirect
-	github.com/go-vela/types v0.6.1-0.20210108224628-20005834775b
+	github.com/go-vela/types v0.7.2
 	github.com/google/go-cmp v0.5.0 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/mholt/archiver v3.1.1+incompatible
