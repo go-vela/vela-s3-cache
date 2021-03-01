@@ -17,9 +17,21 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-// nolint:funlen // function is lengthy due to number of
-// customizable fields.
+// nolint: funlen // ignore function length due to comments and flags
 func main() {
+	// capture application version information
+	v := version.New()
+
+	// serialize the version information as pretty JSON
+	bytes, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	// output the version information to stdout
+	fmt.Fprintf(os.Stdout, "%s\n", string(bytes))
+
+	// create new CLI application
 	app := cli.NewApp()
 
 	// Plugin Information
@@ -39,7 +51,7 @@ func main() {
 
 	app.Action = run
 	app.Compiled = time.Now()
-	app.Version = version.New().Semantic()
+	app.Version = v.Semantic()
 
 	// Plugin Flags
 	// nolint:lll // not breaking lines to keep it consistent
@@ -181,23 +193,14 @@ func main() {
 		},
 	}
 
-	err := app.Run(os.Args)
+	err = app.Run(os.Args)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 }
 
 // run executes the plugin based off the configuration provided.
-func run(c *cli.Context) (err error) {
-	// capture the version information as pretty JSON
-	v, err := json.MarshalIndent(version.New(), "", "  ")
-	if err != nil {
-		return err
-	}
-
-	// output the version information to stdout
-	fmt.Fprintf(os.Stdout, "%s\n", string(v))
-
+func run(c *cli.Context) error {
 	// set the log level for the plugin
 	switch c.String("log.level") {
 	case "t", "trace", "Trace", "TRACE":
@@ -270,7 +273,7 @@ func run(c *cli.Context) (err error) {
 	}
 
 	// validate the plugin
-	err = p.Validate()
+	err := p.Validate()
 	if err != nil {
 		return err
 	}
