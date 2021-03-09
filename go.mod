@@ -14,7 +14,7 @@ require (
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/minio/minio-go/v7 v7.0.10
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
-	github.com/sirupsen/logrus v1.8.0
+	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/urfave/cli/v2 v2.3.0
 )
