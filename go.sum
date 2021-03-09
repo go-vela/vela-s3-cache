@@ -26,8 +26,8 @@ github.com/go-vela/archiver v1.1.3-0.20200811184543-d2452770f58c h1:QxBww8IGczXj
 github.com/go-vela/archiver v1.1.3-0.20200811184543-d2452770f58c/go.mod h1:4RchQT+asShicYko/T1bnbFDW69GMt1QgBaetZyanEc=
 github.com/go-vela/archiver v2.1.0+incompatible h1:SZGl2fbm/WHrxVWHiUfPVylsqxodDphPXC6vdrV2zbg=
 github.com/go-vela/archiver v2.1.0+incompatible/go.mod h1:pYn/vJ47tuVltHdnA8YrDWOZ6yix4k0ZSKUBbWmkAFM=
-github.com/go-vela/types v0.7.3 h1:q0gUtl/IKBCxjfHkRSHbYcKBF7FMGVi6m7RAE4ZGGzk=
-github.com/go-vela/types v0.7.3/go.mod h1:/IsyxCijlz8BArRxBfrfRv7BBe/hmJGtVWegkS3ooJU=
+github.com/go-vela/types v0.7.4 h1:iVz1kDS/uvkOoridyyt0bTZ5tG2j3QYx25rbyFdu35M=
+github.com/go-vela/types v0.7.4/go.mod h1:/IsyxCijlz8BArRxBfrfRv7BBe/hmJGtVWegkS3ooJU=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/snappy v0.0.1 h1:Qgr9rKW7uDUkrbSmQeiDsGa8SjGyCOGtuasMWwvp2P4=
 github.com/golang/snappy v0.0.1/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
