@@ -109,7 +109,7 @@ func main() {
 		// Flush Flags
 
 		&cli.DurationFlag{
-			EnvVars:  []string{"PARAMETER_AGE", "S3_CACHE_AGE"},
+			EnvVars:  []string{"PARAMETER_AGE", "PARAMETER_FLUSH_AGE", "S3_CACHE_AGE"},
 			FilePath: "/vela/parameters/s3-cache/age,/vela/secrets/s3-cache/age",
 			Name:     "flush.age",
 			Usage:    "flush cache files older than # days",
@@ -128,37 +128,37 @@ func main() {
 		// S3 Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SERVER", "S3_CACHE_SERVER"},
+			EnvVars:  []string{"PARAMETER_SERVER", "S3_CACHE_SERVER", "CACHE_S3_SERVER"},
 			FilePath: "/vela/parameters/s3-cache/server,/vela/secrets/s3-cache/server",
 			Name:     "config.server",
 			Usage:    "s3 server to store the cache",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ACCELERATED_ENDPOINT", "S3_CACHE_ACCELERATED_ENDPOINT"},
+			EnvVars:  []string{"PARAMETER_ACCELERATED_ENDPOINT", "S3_CACHE_ACCELERATED_ENDPOINT", "CACHE_S3_ACCELERATED_ENDPOINT"},
 			FilePath: "/vela/parameters/s3-cache/accelerated_endpoint,/vela/secrets/s3-cache/accelerated_endpoint",
 			Name:     "config.accelerated_endpoint",
 			Usage:    "s3 accelerated endpoint",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ACCESS_KEY", "S3_CACHE_ACCESS_KEY", "AWS_ACCESS_KEY_ID"},
+			EnvVars:  []string{"PARAMETER_ACCESS_KEY", "S3_CACHE_ACCESS_KEY", "AWS_ACCESS_KEY_ID", "CACHE_S3_ACCESS_KEY"},
 			FilePath: "/vela/parameters/s3-cache/access_key,/vela/secrets/s3-cache/access_key",
 			Name:     "config.access_key",
 			Usage:    "s3 access key for authentication to server",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SECRET_KEY", "S3_CACHE_SECRET_KEY", "AWS_SECRET_ACCESS_KEY"},
+			EnvVars:  []string{"PARAMETER_SECRET_KEY", "S3_CACHE_SECRET_KEY", "AWS_SECRET_ACCESS_KEY", "CACHE_S3_SECRET_KEY"},
 			FilePath: "/vela/parameters/s3-cache/secret_key,/vela/secrets/s3-cache/secret_key",
 			Name:     "config.secret_key",
 			Usage:    "s3 secret key for authentication to server",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SESSION_TOKEN", "S3_CACHE_SESSION_TOKEN", "AWS_SESSION_TOKEN"},
+			EnvVars:  []string{"PARAMETER_SESSION_TOKEN", "S3_CACHE_SESSION_TOKEN", "AWS_SESSION_TOKEN", "CACHE_S3_SESSION_TOKEN"},
 			FilePath: "/vela/parameters/s3-cache/session_token,/vela/secrets/s3-cache/session_token",
 			Name:     "config.session_token",
 			Usage:    "s3 session token",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_REGION", "S3_CACHE_REGION"},
+			EnvVars:  []string{"PARAMETER_REGION", "S3_CACHE_REGION", "CACHE_S3_REGION"},
 			FilePath: "/vela/parameters/s3-cache/region,/vela/secrets/s3-cache/region",
 			Name:     "config.region",
 			Usage:    "s3 region for the region of the bucket",
