@@ -187,3 +187,11 @@ steps:
 ```
 
 Below are a list of common problems and how to solve them:
+
+### Invalid duration value
+
+The error may look like this:
+
+    could not parse \"14d\" as duration value for flag flush.age: time: unknown unit \"d\" in duration \"14d\"
+
+Values for rebuild and restore `timeout` and flushing `age` are parsed using Go's [time.ParseDuration](https://golang.org/pkg/time/#ParseDuration) function. Only `h` for hours, `m` for minutes, and so on for smaller time units are supported; `d` for days will cause an error unless added in subsequent versions of Go after v1.16.
