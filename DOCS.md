@@ -42,6 +42,23 @@ steps:
         - .gradle
 ```
 
+Sample of rebuilding a cache while preserving the directory structure:
+
+```yaml
+steps:
+  - name: rebuild_cache
+    image: target/vela-s3-cache:latest
+    pull: always
+    parameters:
+      action: rebuild
+      bucket: mybucket
+      server: mybucket.s3-us-west-2.amazonaws.com
+      preserve_path: true
+      mount:
+        - foo/test1
+        - bar/test2
+```
+
 Sample of flushing a cache:
 
 ```yaml
@@ -146,17 +163,18 @@ The following parameters are used to configure the `restore` action:
 | Name       | Description                                                | Required | Default       | Environment Variables                       |
 | ---------- | ---------------------------------------------------------- | -------- | ------------- | ------------------------------------------- |
 | `filename` | the name of the cache object                               | `true`   | `archive.tgz` | `PARAMETER_FILENAME`<br>`S3_CACHE_FILENAME` |
-| `mount`    | the file or directories locations to build your cache from | `true`   | `N/A`         | `PARAMETER_MOUNT`<br>`S3_CACHE_MOUNT`       |
 | `timeout`  | the timeout for the call to s3                             | `false`  | `10m`         | `PARAMETER_TIMEOUT`<br>`S3_CACHE_TIMEOUT`   |
 
 ### Rebuild
 
 The following parameters are used to configure the `rebuild` action:
 
-| Name       | Description                    | Required | Default       | Environment Variables                       |
-| ---------- | ------------------------------ | -------- | ------------- | ------------------------------------------- |
-| `filename` | the name of the cache object   | `true`   | `archive.tgz` | `PARAMETER_FILENAME`<br>`S3_CACHE_FILENAME` |
-| `timeout`  | the timeout for the call to s3 | `false`  | `10m`         | `PARAMETER_TIMEOUT`<br>`S3_CACHE_TIMEOUT`   |
+| Name            | Description                                                                 | Required | Default       | Environment Variables                           |
+| --------------- | --------------------------------------------------------------------------- | -------- | ------------- | ----------------------------------------------- |
+| `filename`      | the name of the cache object                                                | `true`   | `archive.tgz` | `PARAMETER_FILENAME`<br>`S3_CACHE_FILENAME`     |
+| `timeout`       | the timeout for the call to s3                                              | `false`  | `10m`         | `PARAMETER_TIMEOUT`<br>`S3_CACHE_TIMEOUT`       |
+| `preserve_path` | whether to preserve the relative directory structure during the tar process | `false`  | `false`       | `PARAMETER_PRESERVE_PATH`<br>`S3_PRESERVE_PATH` |
+| `mount`         | the file or directories locations to build your cache from                  | `true`   | `N/A`         | `PARAMETER_MOUNT`<br>`S3_CACHE_MOUNT`           |
 
 ### Flush
 
