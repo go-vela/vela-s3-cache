@@ -146,6 +146,20 @@ build-static-ci:
 		-o release/vela-s3-cache \
 		github.com/go-vela/vela-s3-cache/cmd/vela-s3-cache
 
+# The `build-darwin` target is intended to compile the
+# Go source code into a Darwin compatible (MacOS) binary.
+#
+# Usage: `make build-darwin`
+.PHONY: build-darwin
+build-darwin:
+	@echo
+	@echo "### Building release/darwin/amd64/vela-s3-cache binary"
+	GOOS=darwin CGO_ENABLED=0 GOARCH=amd64 \
+		go build -a \
+		-ldflags '${LD_FLAGS}' \
+		-o release/darwin/amd64/vela-s3-cache \
+		github.com/go-vela/vela-s3-cache/cmd/vela-s3-cache
+
 # The `check` target is intended to output all
 # dependencies from the Go module that need updates.
 #

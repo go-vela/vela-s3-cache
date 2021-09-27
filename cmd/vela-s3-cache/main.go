@@ -125,6 +125,14 @@ func main() {
 			Usage:    "list of files/directories to cache",
 		},
 
+		&cli.BoolFlag{
+			EnvVars:  []string{"PARAMETER_PRESERVE_PATH", "S3_PRESERVE_PATH"},
+			FilePath: "/vela/parameters/s3-cache/preserve_path,/vela/secrets/s3-cache/preserve_path",
+			Name:     "rebuild.preserve_path",
+			Value:    false,
+			Usage:    "whether to preserve the relative directory structure during the tar process",
+		},
+
 		// S3 Flags
 
 		&cli.StringFlag{
@@ -248,12 +256,13 @@ func run(c *cli.Context) error {
 		},
 		// rebuild configuration
 		Rebuild: &Rebuild{
-			Bucket:   c.String("bucket"),
-			Filename: c.String("filename"),
-			Timeout:  c.Duration("timeout"),
-			Mount:    c.StringSlice("rebuild.mount"),
-			Path:     c.String("path"),
-			Prefix:   c.String("prefix"),
+			Bucket:       c.String("bucket"),
+			Filename:     c.String("filename"),
+			Timeout:      c.Duration("timeout"),
+			Mount:        c.StringSlice("rebuild.mount"),
+			Path:         c.String("path"),
+			Prefix:       c.String("prefix"),
+			PreservePath: c.Bool("rebuild.preserve_path"),
 		},
 		// restore configuration
 		Restore: &Restore{
