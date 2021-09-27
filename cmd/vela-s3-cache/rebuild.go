@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/mholt/archiver"
+	"github.com/go-vela/archiver/v3"
 	"github.com/minio/minio-go/v7"
 	"github.com/sirupsen/logrus"
 )
