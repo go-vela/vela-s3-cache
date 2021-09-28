@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/mholt/archiver"
+	"github.com/go-vela/archiver/v3"
 	"github.com/minio/minio-go/v7"
 	"github.com/sirupsen/logrus"
 )
@@ -35,6 +35,8 @@ type Rebuild struct {
 	Mount []string
 	// will hold our final namespace for the path to the objects
 	Namespace string
+	// whether to preserve the relative directory structure during the tar process
+	PreservePath bool
 }
 
 // Exec formats and runs the actions for rebuilding a cache in s3.
@@ -42,6 +44,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	logrus.Trace("running rebuild with provided configuration")
 
 	t := archiver.NewTarGz()
+	t.PreservePath = r.PreservePath
 
 	logrus.Debug("determining temp directory for archive")
 
