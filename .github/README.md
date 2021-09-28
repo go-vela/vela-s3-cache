@@ -4,7 +4,7 @@ s3 cache plugin to save build information in an s3 compatible bucket
 
 ## Documentation
 
-For installation and usage, please [visit our user docs](http://go/vela).
+For installation and usage, please [visit our user docs](https://go-vela.github.io/docs).
 
 ## Contributing
 
