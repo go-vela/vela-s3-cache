@@ -22,7 +22,6 @@ type Config struct {
 	AccessKey           string
 	SecretKey           string
 	SessionToken        string
-	Token               string
 	Region              string
 }
 
@@ -30,7 +29,7 @@ type Config struct {
 func (c *Config) New() (*minio.Client, error) {
 	logrus.Trace("creating new Minio client from plugin configuration")
 
-	// default to amazon aws s3 storeage
+	// default to amazon aws s3 storage
 	endpoint := "s3.amazonaws.com"
 	useSSL := true
 
@@ -50,7 +49,7 @@ func (c *Config) New() (*minio.Client, error) {
 
 	var creds *credentials.Credentials
 	if len(c.AccessKey) > 0 && len(c.SecretKey) > 0 {
-		creds = credentials.NewStaticV4(c.AccessKey, c.SecretKey, c.Token)
+		creds = credentials.NewStaticV4(c.AccessKey, c.SecretKey, c.SessionToken)
 	} else {
 		creds = credentials.NewIAM("")
 
