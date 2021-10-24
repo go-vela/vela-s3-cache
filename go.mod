@@ -9,7 +9,7 @@ require (
 	github.com/go-vela/archiver/v3 v3.4.0
 	github.com/go-vela/types v0.10.0
 	github.com/joho/godotenv v1.4.0
-	github.com/minio/minio-go/v7 v7.0.14
+	github.com/minio/minio-go/v7 v7.0.15
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/urfave/cli/v2 v2.3.0
