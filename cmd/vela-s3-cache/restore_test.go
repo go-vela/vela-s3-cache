@@ -60,7 +60,6 @@ func TestS3Cache_Restore_Validate_NoFilename(t *testing.T) {
 
 func TestS3Cache_Restore_Validate_NoTimeout(t *testing.T) {
 	// setup types
-
 	r := &Restore{
 		Bucket:   "bucket",
 		Prefix:   "foo/bar",
