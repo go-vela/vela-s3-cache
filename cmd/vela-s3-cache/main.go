@@ -54,7 +54,6 @@ func main() {
 	app.Version = v.Semantic()
 
 	// Plugin Flags
-	// nolint:lll // not breaking lines to keep it consistent
 	app.Flags = []cli.Flag{
 
 		&cli.StringFlag{

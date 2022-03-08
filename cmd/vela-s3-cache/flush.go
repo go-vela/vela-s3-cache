@@ -54,7 +54,7 @@ func (f *Flush) Exec(mc *minio.Client) error {
 		objectsExist = true
 
 		if object.Err != nil {
-			return fmt.Errorf("unable to retrieve object %s: %s", object.Key, object.Err)
+			return fmt.Errorf("unable to retrieve object %s: %w", object.Key, object.Err)
 		}
 
 		logrus.Infof("  - %s; last modified: %s", object.Key, object.LastModified.String())
@@ -78,7 +78,7 @@ func (f *Flush) Exec(mc *minio.Client) error {
 			if err != nil {
 				logrus.Info("    ├ object successfully removed.")
 			} else {
-				return fmt.Errorf("object %s was not removed: %v", object.Key, err)
+				return fmt.Errorf("object %s was not removed: %w", object.Key, err)
 			}
 		} else {
 			logrus.Infof("    ├ '%s' flush age criteria not met. keeping object.", f.Age)

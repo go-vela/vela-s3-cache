@@ -59,7 +59,7 @@ func (p *Plugin) Exec() (err error) {
 		return p.Restore.Exec(mc)
 	default:
 		return fmt.Errorf(
-			"%s: %s (Valid actions: %s, %s, %s)",
+			"%w: %s (Valid actions: %s, %s, %s)",
 			ErrInvalidAction,
 			p.Config.Action,
 			flushAction,
@@ -113,7 +113,7 @@ func (p *Plugin) Validate() error {
 		return p.Restore.Validate()
 	default:
 		return fmt.Errorf(
-			"%s: %s (Valid actions: %s, %s, %s)",
+			"%w: %s (Valid actions: %s, %s, %s)",
 			ErrInvalidAction,
 			p.Config.Action,
 			flushAction,
