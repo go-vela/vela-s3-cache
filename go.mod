@@ -10,12 +10,12 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/minio/minio-go/v7 v7.0.23
 	github.com/sirupsen/logrus v1.8.1
-	github.com/urfave/cli/v2 v2.3.0
+	github.com/urfave/cli/v2 v2.4.0
 )
 
 require (
 	github.com/andybalholm/brotli v1.0.1 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/uuid v1.1.1 // indirect
@@ -33,8 +33,7 @@ require (
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.2 // indirect
 	github.com/rs/xid v1.2.1 // indirect
-	github.com/russross/blackfriday/v2 v2.0.1 // indirect
-	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/ulikunitz/xz v0.5.9 // indirect
