@@ -4,7 +4,7 @@
 # Use of this source code is governed by the LICENSE file in this repository.
 
 #############################################################################
-##    docker build --no-cache --target certs -t vela-downstream:certs .    ##
+##     docker build --no-cache --target certs -t vela-s3-cache:certs .     ##
 #############################################################################
 
 FROM alpine as certs
@@ -12,7 +12,7 @@ FROM alpine as certs
 RUN apk add --update --no-cache ca-certificates
 
 ##############################################################
-##    docker build --no-cache -t vela-downstream:local .    ##
+##     docker build --no-cache -t vela-s3-cache:local .     ##
 ##############################################################
 
 FROM scratch
