@@ -10,7 +10,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/minio/minio-go/v7 v7.0.39
 	github.com/sirupsen/logrus v1.9.0
-	github.com/urfave/cli/v2 v2.11.2
+	github.com/urfave/cli/v2 v2.17.1
 )
 
 require (
