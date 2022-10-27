@@ -230,7 +230,7 @@ func run(c *cli.Context) error {
 
 	logrus.WithFields(logrus.Fields{
 		"code":     "https://github.com/go-vela/vela-s3-cache",
-		"docs":     "https://go-vela.github.io/docs/plugins/registry/s3-cache",
+		"docs":     "https://go-vela.github.io/docs/plugins/registry/pipeline/s3-cache",
 		"registry": "https://hub.docker.com/r/target/vela-s3-cache",
 	}).Info("Vela S3 Cache Plugin")
 
