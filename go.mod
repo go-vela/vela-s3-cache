@@ -7,7 +7,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/go-vela/archiver/v3 v3.4.0
 	github.com/go-vela/types v0.17.0
-	github.com/joho/godotenv v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/minio/minio-go/v7 v7.0.40
 	github.com/sirupsen/logrus v1.9.0
 	github.com/urfave/cli/v2 v2.17.1
