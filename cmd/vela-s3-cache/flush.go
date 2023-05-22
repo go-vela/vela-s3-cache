@@ -7,9 +7,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/dustin/go-humanize"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/minio/minio-go/v7"
 	"github.com/sirupsen/logrus"
 )
