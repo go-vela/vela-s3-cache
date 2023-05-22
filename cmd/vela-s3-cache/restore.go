@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"os"
 	"time"
 
@@ -44,13 +45,15 @@ func (r *Restore) Exec(mc *minio.Client) error {
 	defer cancel()
 
 	// collect metadata on the object
-	ok, err := mc.StatObject(ctx, r.Bucket, r.Namespace, minio.StatObjectOptions{})
-	if ok.Key == "" {
+	objInfo, err := mc.StatObject(ctx, r.Bucket, r.Namespace, minio.StatObjectOptions{})
+	if objInfo.Key == "" {
 		logrus.Error(err)
 		return nil
 	}
 
 	logrus.Debugf("getting object in bucket %s from path: %s", r.Bucket, r.Namespace)
+
+	logrus.Infof("%s to download", humanize.Bytes(uint64(objInfo.Size)))
 
 	// retrieve the object in specified path of the bucket
 	err = mc.FGetObject(ctx, r.Bucket, r.Namespace, r.Filename, minio.GetObjectOptions{})
@@ -58,7 +61,12 @@ func (r *Restore) Exec(mc *minio.Client) error {
 		return err
 	}
 
-	logrus.Infof("copied %s to local filesystem", r.Filename)
+	stat, err := os.Stat(r.Filename)
+	if err != nil {
+		return err
+	}
+
+	logrus.Infof("downloaded %s to %s on local filesystem, ", humanize.Bytes(uint64(stat.Size())), r.Filename)
 
 	logrus.Debug("getting current working directory")
 
