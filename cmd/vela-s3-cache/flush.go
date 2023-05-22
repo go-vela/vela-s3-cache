@@ -83,6 +83,7 @@ func (f *Flush) Exec(mc *minio.Client) error {
 			_, err = mc.StatObject(ctx, f.Bucket, object.Key, minio.StatObjectOptions{})
 			if err != nil {
 				bytesFreedCounter += objSize
+
 				logrus.Infof("    ├ object successfully removed, %s freed", humanSize)
 			} else {
 				return fmt.Errorf("object %s was not removed: %w", object.Key, err)
