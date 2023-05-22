@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"time"
 
 	"github.com/minio/minio-go/v7"
@@ -36,6 +37,8 @@ func (f *Flush) Exec(mc *minio.Client) error {
 	// temp var for messaging to user
 	objectsExist := false
 
+	bytesFreedCounter := uint64(0)
+
 	// set a timeout on the request to the cache provider
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -57,7 +60,10 @@ func (f *Flush) Exec(mc *minio.Client) error {
 			return fmt.Errorf("unable to retrieve object %s: %w", object.Key, object.Err)
 		}
 
-		logrus.Infof("  - %s; last modified: %s", object.Key, object.LastModified.String())
+		objSize := uint64(object.Size)
+		humanSize := humanize.Bytes(objSize)
+
+		logrus.Infof("  - %s; last modified: %s; size: %s", object.Key, object.LastModified.String(), humanSize)
 
 		// determine time in the past for flush cut off
 		timeInPast := time.Now().Add(-f.Age)
@@ -76,7 +82,8 @@ func (f *Flush) Exec(mc *minio.Client) error {
 			// if the supplied path leads to an object that doesn't exist
 			_, err = mc.StatObject(ctx, f.Bucket, object.Key, minio.StatObjectOptions{})
 			if err != nil {
-				logrus.Info("    ├ object successfully removed.")
+				bytesFreedCounter += objSize
+				logrus.Infof("    ├ object successfully removed, %s freed", humanSize)
 			} else {
 				return fmt.Errorf("object %s was not removed: %w", object.Key, err)
 			}
@@ -90,6 +97,10 @@ func (f *Flush) Exec(mc *minio.Client) error {
 	}
 
 	logrus.Infof("cache flush action completed")
+
+	if bytesFreedCounter > 0 {
+		logrus.Infof("%s freed in total", humanize.Bytes(bytesFreedCounter))
+	}
 
 	return nil
 }
