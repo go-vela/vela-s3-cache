@@ -58,7 +58,12 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 		return err
 	}
 
-	logrus.Debugf("archive %s created", f)
+	stat, err := os.Stat(r.Filename)
+	if err != nil {
+		return err
+	}
+
+	logrus.Infof("archive %s created, %s", f, humanize.Bytes(uint64(stat.Size())))
 
 	logrus.Debugf("opening artifact %s for reading", f)
 
