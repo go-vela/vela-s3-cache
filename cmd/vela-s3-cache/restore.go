@@ -66,7 +66,7 @@ func (r *Restore) Exec(mc *minio.Client) error {
 		return err
 	}
 
-	logrus.Infof("downloaded %s to %s on local filesystem, ", humanize.Bytes(uint64(stat.Size())), r.Filename)
+	logrus.Infof("downloaded %s to %s on local filesystem", humanize.Bytes(uint64(stat.Size())), r.Filename)
 
 	logrus.Debug("getting current working directory")
 

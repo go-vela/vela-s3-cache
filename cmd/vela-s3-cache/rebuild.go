@@ -58,7 +58,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 		return err
 	}
 
-	stat, err := os.Stat(r.Filename)
+	stat, err := os.Stat(f)
 	if err != nil {
 		return err
 	}
