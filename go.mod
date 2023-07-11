@@ -8,9 +8,9 @@ require (
 	github.com/go-vela/archiver/v3 v3.4.0
 	github.com/go-vela/types v0.19.2
 	github.com/joho/godotenv v1.5.1
-	github.com/minio/minio-go/v7 v7.0.56
+	github.com/minio/minio-go/v7 v7.0.60
 	github.com/sirupsen/logrus v1.9.3
-	github.com/urfave/cli/v2 v2.25.6
+	github.com/urfave/cli/v2 v2.25.7
 )
 
 require (
