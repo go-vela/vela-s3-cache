@@ -5,7 +5,7 @@
 ##     docker build --no-cache --target certs -t vela-s3-cache:certs .     ##
 #############################################################################
 
-FROM alpine@sha256:eece025e432126ce23f223450a0326fbebde39cdf496a85d8c016293fc851978 as certs
+FROM alpine@sha256:51b67269f354137895d43f3b3d810bfacd3945438e94dc5ac55fdac340352f48 as certs
 
 RUN apk add --update --no-cache ca-certificates
 
