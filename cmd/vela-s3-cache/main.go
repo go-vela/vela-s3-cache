@@ -15,7 +15,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-// nolint: funlen // ignore function length due to comments and flags
+//nolint:funlen // ignore function length due to comments and flags
 func main() {
 	// capture application version information
 	v := version.New()

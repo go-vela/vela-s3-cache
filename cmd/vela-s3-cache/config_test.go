@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestS3Cache_Config_New(t *testing.T) {
+func TestS3Cache_Config_New(_ *testing.T) {
 	//TODO: write this test
 }
 
