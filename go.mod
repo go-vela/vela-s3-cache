@@ -2,7 +2,7 @@ module github.com/go-vela/vela-s3-cache
 
 go 1.21.9
 
-toolchain go1.22.6
+toolchain go1.23.0
 
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
