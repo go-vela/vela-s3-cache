@@ -32,5 +32,4 @@ jobs:
           # Check that go fmt ./... produces a zero diff; clean up any changes afterwards.
           go fmt ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
           # Check that go fix ./... produces a zero diff; clean up any changes afterwards.
-          # uncomment when go 1.23.0 drops when the following should be fixed
-          # go fix ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+          go fix ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
