@@ -8,11 +8,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-vela/vela-s3-cache/version"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 
 	_ "github.com/joho/godotenv/autoload"
+
+	"github.com/go-vela/vela-s3-cache/version"
 )
 
 //nolint:funlen // ignore function length due to comments and flags
@@ -53,7 +54,6 @@ func main() {
 
 	// Plugin Flags
 	app.Flags = []cli.Flag{
-
 		&cli.StringFlag{
 			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "S3_CACHE_LOG_LEVEL"},
 			FilePath: "/vela/parameters/s3-cache/log_level,/vela/secrets/s3-cache/log_level",
