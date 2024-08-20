@@ -10,11 +10,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var (
-	// ErrInvalidAction defines the error type when the
-	// Action provided to the Plugin is unsupported.
-	ErrInvalidAction = errors.New("invalid action provided")
-)
+// ErrInvalidAction defines the error type when the
+// Action provided to the Plugin is unsupported.
+var ErrInvalidAction = errors.New("invalid action provided")
 
 // Plugin represents the required information for structs.
 type Plugin struct {
