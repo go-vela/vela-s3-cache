@@ -1,0 +1,94 @@
+name: Test S3 Cache
+
+on:
+  push:
+    paths:
+      - "**.go"
+  pull_request:
+    paths:
+      - "**.go"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      minio:
+        image: minio/minio
+        ports:
+          - 9000:9000
+        env:
+          MINIO_ROOT_USER: minioadmin
+          MINIO_ROOT_PASSWORD: minioadmin
+        options: --name minio --health-cmd "curl http://localhost:9000/minio/health/live" --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+
+      - name: install go
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+        with:
+          # use version from go.mod file
+          go-version-file: "go.mod"
+          cache: true
+          check-latest: true
+
+      - name: build s3-cache plugin binary
+        run: |
+          make build
+
+      # install node to create a folder to cache
+      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: latest
+
+      - name: install eslint
+        run: |
+          npm init -y
+          npm install eslint
+
+      - name: install mc
+        run: |
+          curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
+          curl https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o /tmp/mc.sha256sum
+          sha256sum /usr/local/bin/mc | awk '{print $1}' | grep -q "$(awk '{print $1}' /tmp/mc.sha256sum)" && echo "Match" || { echo "SHA256 checksum for minio client binary does not match - exiting with error"; exit 1; }
+
+      - name: create test bucket
+        run: |
+          mc config host add myminio http://localhost:9000 minioadmin minioadmin
+          mc mb myminio/test-bucket
+
+      - name: test rebuild action
+        env:
+          S3_CACHE_ACCESS_KEY: minioadmin
+          S3_CACHE_SECRET_KEY: minioadmin
+          S3_CACHE_BUCKET: test-bucket
+          S3_CACHE_SERVER: http://localhost:9000
+          VELA_REPO_ORG: test
+          VELA_REPO_OWNER: test
+        run: |
+          ./release/vela-s3-cache --config.action=rebuild --rebuild.mount=node_modules
+          mv node_modules node_modules_original
+
+      - name: test restore action
+        env:
+          S3_CACHE_ACCESS_KEY: minioadmin
+          S3_CACHE_SECRET_KEY: minioadmin
+          S3_CACHE_BUCKET: test-bucket
+          S3_CACHE_SERVER: http://localhost:9000
+          VELA_REPO_ORG: test
+          VELA_REPO_OWNER: test
+        run: |
+          ./release/vela-s3-cache --config.action=restore
+
+      - name: check
+        run: |
+          if ! diff -rq --no-dereference node_modules node_modules_original; then
+            echo "differences found between node_modules and node_modules_original"
+            exit 1
+          else
+            echo "no differences found - cache restored successfully"
+          fi
