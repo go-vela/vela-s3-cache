@@ -58,7 +58,8 @@ func (f *Flush) Exec(mc *minio.Client) error {
 			return fmt.Errorf("unable to retrieve object %s: %w", object.Key, object.Err)
 		}
 
-		objSize := uint64(object.Size)
+		//nolint:gosec // G115: integer overflow conversion should be handled via max()
+		objSize := uint64(max(0, object.Size))
 		humanSize := humanize.Bytes(objSize)
 
 		logrus.Infof("  - %s; last modified: %s; size: %s", object.Key, object.LastModified.String(), humanSize)
