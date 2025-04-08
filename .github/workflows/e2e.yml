@@ -10,22 +10,6 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
-    # the below _should_ work :(
-    # services:
-    #   minio:
-    #     image: minio/minio:latest-cicd
-    #     ports:
-    #       - 9000:9000
-    #     env:
-    #       MINIO_ROOT_USER: minioadmin
-    #       MINIO_ROOT_PASSWORD: minioadmin
-    #     options: >-
-    #       --name minio
-    #       --health-cmd "curl http://localhost:9000/minio/health/live"
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
 
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
@@ -54,14 +38,22 @@ jobs:
 
       - name: start minio server
         run: |
-          docker run -d -p 9000:9000 --name minio -e "MINIO_ROOT_USER=minioadmin" -e "MINIO_ROOT_PASSWORD=minioadmin" quay.io/minio/minio
+          docker run -d -p 9000:9000 --name minio \
+                  -e "MINIO_ACCESS_KEY=minioadmin" \
+                  -e "MINIO_SECRET_KEY=minioadmin" \
+                  -v /tmp/data:/data \
+                  -v /tmp/config:/root/.minio \
+                  --health-cmd "curl http://localhost:9000/minio/health/live" \
+                  minio/minio:RELEASE.2025-04-03T14-56-28Z server /data
 
       - name: wait for minio
         timeout-minutes: 1
         run: |
-          until curl http://localhost:9000/minio/health/live; do
-              sleep 1
-          done
+          curl --connect-timeout 5 \
+            --max-time 120 \
+            --retry 12 \
+            --retry-max-time 120 \
+            'http://localhost:9000/minio/health/live'
 
       - name: install mc
         run: |
