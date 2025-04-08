@@ -113,7 +113,7 @@ func (t *TarGzipArchiver) setHeaderName(header *tar.Header, source, path string)
 	return nil
 }
 
-// copyFileContent copies the content of a file to the tar writer
+// copyFileContent copies the content of a file to the tar writer.
 func (t *TarGzipArchiver) copyFileContent(path string, tarWriter *tar.Writer) error {
 	file, err := os.Open(path)
 	if err != nil {
