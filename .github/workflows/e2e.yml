@@ -60,7 +60,7 @@ jobs:
         run: |
           curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
           curl https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o /tmp/mc.sha256sum
-          sha256sum /usr/local/bin/mc | awk '{print $1}' | grep -q "$(awk '{print $1}' /tmp/mc.sha256sum)" && echo "Match" || { echo "SHA256 checksum for minio client binary does not match - exiting with error"; exit 1; }
+          sha256sum /usr/local/bin/mc | awk '{print $1}' | grep -q "$(awk '{print $1}' /tmp/mc.sha256sum)" && echo "SHA256 checksum matched" || { echo "SHA256 checksum for minio client binary does not match - exiting with error"; exit 1; }
           chmod +x /usr/local/bin/mc
 
       - name: create test bucket
