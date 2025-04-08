@@ -52,6 +52,7 @@ jobs:
       - name: wait for minio
         timeout-minutes: 1
         run: |
+          docker ps
           curl --connect-timeout 5 \
             --max-time 120 \
             --retry 12 \
