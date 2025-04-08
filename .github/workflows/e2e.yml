@@ -11,20 +11,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
-    services:
-      minio:
-        image: minio/minio:latest-cicd
-        ports:
-          - 9000:9000
-        env:
-          MINIO_ROOT_USER: minioadmin
-          MINIO_ROOT_PASSWORD: minioadmin
-        options: >-
-          --name minio
-          --health-cmd "curl http://localhost:9000/minio/health/live"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    # the below _should_ work :(
+    # services:
+    #   minio:
+    #     image: minio/minio:latest-cicd
+    #     ports:
+    #       - 9000:9000
+    #     env:
+    #       MINIO_ROOT_USER: minioadmin
+    #       MINIO_ROOT_PASSWORD: minioadmin
+    #     options: >-
+    #       --name minio
+    #       --health-cmd "curl http://localhost:9000/minio/health/live"
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
 
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
@@ -50,6 +51,10 @@ jobs:
         run: |
           npm init -y
           npm install eslint
+
+      - name: start minio server
+        run: |
+          docker run -d -p 9000:9000 --name minio -e "MINIO_ROOT_USER=minioadmin" -e "MINIO_ROOT_PASSWORD=minioadmin" quay.io/minio/minio
 
       - name: install mc
         run: |
