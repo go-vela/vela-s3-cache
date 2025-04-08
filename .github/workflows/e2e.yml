@@ -75,7 +75,7 @@ jobs:
           S3_CACHE_BUCKET: test-bucket
           S3_CACHE_SERVER: http://localhost:9000
           VELA_REPO_ORG: test
-          VELA_REPO_OWNER: test
+          VELA_REPO_NAME: test
         run: |
           ./release/vela-s3-cache --config.action=rebuild --rebuild.mount=node_modules
           mv node_modules node_modules_original
@@ -87,7 +87,7 @@ jobs:
           S3_CACHE_BUCKET: test-bucket
           S3_CACHE_SERVER: http://localhost:9000
           VELA_REPO_ORG: test
-          VELA_REPO_OWNER: test
+          VELA_REPO_NAME: test
         run: |
           ./release/vela-s3-cache --config.action=restore
 
