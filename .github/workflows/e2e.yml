@@ -13,7 +13,7 @@ jobs:
     
     services:
       minio:
-        image: minio/minio
+        image: minio/minio:edge-cicd
         ports:
           - 9000:9000
         env:
@@ -21,7 +21,6 @@ jobs:
           MINIO_ROOT_PASSWORD: minioadmin
         options: >-
           --name minio
-          --entrypoint "minio server /data"
           --health-cmd "curl http://localhost:9000/minio/health/live"
           --health-interval 10s
           --health-timeout 5s
