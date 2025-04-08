@@ -55,7 +55,6 @@ func main() {
 
 	// Plugin Flags
 	app.Flags = []cli.Flag{
-
 		&cli.StringFlag{
 			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "S3_CACHE_LOG_LEVEL"},
 			FilePath: "/vela/parameters/s3-cache/log_level,/vela/secrets/s3-cache/log_level",

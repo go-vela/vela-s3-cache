@@ -28,7 +28,7 @@ var (
 	Tag = "v0.0.0"
 )
 
-// New creates a new version object for Vela that is used throughout the application.
+// New creates a new version object for Vela that is used throughout the aWpplication.
 func New() *version.Version {
 	v, err := semver.NewVersion(Tag)
 	if err != nil {
