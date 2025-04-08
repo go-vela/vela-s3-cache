@@ -47,7 +47,7 @@ jobs:
             -v /tmp/data:/data \
             -v /tmp/config:/root/.minio \
             --health-cmd "curl http://localhost:9000/minio/health/live" \
-            minio/minio:RELEASE.2025-04-03T14-56-28Z server /data
+            minio/minio:RELEASE.2025-04-03T14-56-28Z@sha256:a640662d97632f7b94e9dee8cbb7da5c20db24879725cb4fac36f1e220cd528a server /data
 
       - name: wait for minio
         timeout-minutes: 1
