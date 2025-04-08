@@ -22,7 +22,7 @@ jobs:
     #       MINIO_ROOT_PASSWORD: minioadmin
     #     options: >-
     #       --name minio
-    #       --health-cmd "curl http://127.0.0.1:9000/minio/health/live"
+    #       --health-cmd "curl http://localhost:9000/minio/health/live"
     #       --health-interval 10s
     #       --health-timeout 5s
     #       --health-retries 5
@@ -59,7 +59,7 @@ jobs:
       - name: wait for minio
         timeout-minutes: 1
         run: |
-          until curl http://127.0.0.1:9000/minio/health/live; do
+          until curl http://localhost:9000/minio/health/live; do
               sleep 1
           done
 
