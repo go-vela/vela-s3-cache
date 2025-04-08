@@ -42,22 +42,19 @@ jobs:
       - name: start minio server
         run: |
           docker run -d -p 9000:9000 --name minio \
-                  -e "MINIO_ACCESS_KEY=minioadmin" \
-                  -e "MINIO_SECRET_KEY=minioadmin" \
-                  -v /tmp/data:/data \
-                  -v /tmp/config:/root/.minio \
-                  --health-cmd "curl http://localhost:9000/minio/health/live" \
-                  minio/minio:RELEASE.2025-04-03T14-56-28Z server /data
+            -e "MINIO_ACCESS_KEY=minioadmin" \
+            -e "MINIO_SECRET_KEY=minioadmin" \
+            -v /tmp/data:/data \
+            -v /tmp/config:/root/.minio \
+            --health-cmd "curl http://localhost:9000/minio/health/live" \
+            minio/minio:RELEASE.2025-04-03T14-56-28Z server /data
 
       - name: wait for minio
         timeout-minutes: 1
         run: |
-          docker ps
-          curl --connect-timeout 5 \
-            --max-time 120 \
-            --retry 12 \
-            --retry-max-time 120 \
-            'http://localhost:9000/minio/health/live'
+          until curl http://localhost:9000/minio/health/live; do
+            sleep 5
+          done
 
       - name: install mc
         run: |
