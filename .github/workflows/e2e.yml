@@ -2,11 +2,7 @@ name: Test S3 Cache
 
 on:
   push:
-    paths:
-      - "**.go"
   pull_request:
-    paths:
-      - "**.go"
 
 permissions:
   contents: read
