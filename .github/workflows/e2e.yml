@@ -13,7 +13,7 @@ jobs:
     
     services:
       minio:
-        image: minio/minio:edge-cicd
+        image: minio/minio:latest-cicd
         ports:
           - 9000:9000
         env:
