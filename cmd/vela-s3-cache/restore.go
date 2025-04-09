@@ -70,10 +70,10 @@ func (r *Restore) Exec(mc *minio.Client) error {
 		// delete the temporary archive file
 		err = os.Remove(r.Filename)
 		if err != nil {
-			logrus.Infof("delete of archive file %s unsuccessful", r.Filename)
+			logrus.Debugf("delete of local archive file %s unsuccessful", r.Filename)
 		}
 
-		logrus.Infof("cache archive %s successfully deleted", r.Filename)
+		logrus.Debugf("local cache archive %s successfully deleted", r.Filename)
 	}()
 
 	stat, err := os.Stat(r.Filename)
