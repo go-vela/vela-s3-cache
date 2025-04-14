@@ -4,7 +4,9 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
+	"time"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -51,8 +53,17 @@ func (c *Config) New() (*minio.Client, error) {
 	} else {
 		creds = credentials.NewIAM("")
 
-		// See if the IAM role can be retrieved
-		_, err := creds.Get()
+		// creating http client to use for credential tset
+		httpClient := &http.Client{
+			Timeout: 15 * time.Second,
+		}
+
+		credContext := &credentials.CredContext{
+			Client: httpClient,
+		}
+
+		// attempt to retrieve the IAM role
+		_, err := creds.GetWithContext(credContext)
 		if err != nil {
 			return nil, err
 		}
