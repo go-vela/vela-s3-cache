@@ -53,7 +53,7 @@ func (c *Config) New() (*minio.Client, error) {
 	} else {
 		creds = credentials.NewIAM("")
 
-		// creating http client to use for credential tset
+		// creating http client to use for IAM role request
 		httpClient := &http.Client{
 			Timeout: 15 * time.Second,
 		}
