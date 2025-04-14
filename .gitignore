@@ -26,3 +26,4 @@ release/
 example/*
 !example/hello.txt
 .plugin.env
+.env

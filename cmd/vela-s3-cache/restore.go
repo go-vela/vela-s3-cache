@@ -12,7 +12,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/sirupsen/logrus"
 
-	"github.com/go-vela/archiver/v3"
+	"github.com/go-vela/vela-s3-cache/pkg/archiver"
 )
 
 const restoreAction = "restore"
@@ -43,6 +43,11 @@ func (r *Restore) Exec(mc *minio.Client) error {
 	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
 	defer cancel()
 
+	a, err := archiver.NewArchiver("tar.gz")
+	if err != nil {
+		return err
+	}
+
 	// collect metadata on the object
 	objInfo, err := mc.StatObject(ctx, r.Bucket, r.Namespace, minio.StatObjectOptions{})
 	if objInfo.Key == "" {
@@ -52,20 +57,32 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("getting object in bucket %s from path: %s", r.Bucket, r.Namespace)
 
-	logrus.Infof("%s to download", humanize.Bytes(uint64(objInfo.Size)))
+	//nolint:gosec // G115: integer overflow conversion should be handled via max()
+	logrus.Infof("%s to download", humanize.Bytes(uint64(max(0, objInfo.Size))))
 
 	// retrieve the object in specified path of the bucket
 	err = mc.FGetObject(ctx, r.Bucket, r.Namespace, r.Filename, minio.GetObjectOptions{})
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to retrieve object from bucket %s at path %s: %w", r.Bucket, r.Namespace, err)
 	}
+
+	defer func() {
+		// delete the temporary archive file
+		err = os.Remove(r.Filename)
+		if err != nil {
+			logrus.Debugf("delete of local archive file %s unsuccessful", r.Filename)
+		}
+
+		logrus.Debugf("local cache archive %s successfully deleted", r.Filename)
+	}()
 
 	stat, err := os.Stat(r.Filename)
 	if err != nil {
 		return err
 	}
 
-	logrus.Infof("downloaded %s to %s on local filesystem", humanize.Bytes(uint64(stat.Size())), r.Filename)
+	//nolint:gosec // G115: integer overflow conversion should be handled via max()
+	logrus.Infof("downloaded %s to %s on local filesystem", humanize.Bytes(uint64(max(0, stat.Size()))), r.Filename)
 
 	logrus.Debug("getting current working directory")
 
@@ -77,23 +94,19 @@ func (r *Restore) Exec(mc *minio.Client) error {
 
 	logrus.Debugf("unarchiving file %s into directory %s", r.Filename, pwd)
 
+	data, err := os.Open(r.Filename)
+	if err != nil {
+		return err
+	}
+	defer data.Close()
+
 	// expand the object back onto the filesystem
-	err = archiver.Unarchive(r.Filename, pwd)
+	err = a.Unarchive(ctx, data, pwd)
 	if err != nil {
 		return err
 	}
 
-	logrus.Infof("successfully unpacked archive %s", r.Filename)
-
-	// delete the temporary archive file
-	err = os.Remove(r.Filename)
-	if err != nil {
-		logrus.Infof("delete of archive file %s unsuccessful", r.Filename)
-	} else {
-		logrus.Infof("cache archive %s successfully deleted", r.Filename)
-	}
-
-	logrus.Infof("cache restore action completed")
+	logrus.Infof("successfully restored cache archive %s", r.Filename)
 
 	return nil
 }

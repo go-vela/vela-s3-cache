@@ -3,6 +3,7 @@
 package main
 
 import (
+	"compress/flate"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -86,7 +87,7 @@ func main() {
 			EnvVars:  []string{"PARAMETER_FILENAME", "S3_CACHE_FILENAME"},
 			FilePath: "/vela/parameters/s3-cache/filename,/vela/secrets/s3-cache/filename",
 			Name:     "filename",
-			Usage:    "Filename for the item place in the cache",
+			Usage:    "filename for the item place in the cache",
 			Value:    "archive.tgz",
 		},
 		&cli.StringFlag{
@@ -99,13 +100,14 @@ func main() {
 			EnvVars:  []string{"PARAMETER_TIMEOUT", "S3_CACHE_TIMEOUT"},
 			FilePath: "/vela/parameters/s3-cache/timeout,/vela/secrets/s3-cache/timeout",
 			Name:     "timeout",
-			Usage:    "Default timeout for cache requests",
+			Usage:    "default timeout for cache requests",
 			Value:    10 * time.Minute,
 		},
 
 		// Flush Flags
 
 		&cli.DurationFlag{
+			Category: "Flush",
 			EnvVars:  []string{"PARAMETER_AGE", "PARAMETER_FLUSH_AGE", "S3_CACHE_AGE"},
 			FilePath: "/vela/parameters/s3-cache/age,/vela/secrets/s3-cache/age",
 			Name:     "flush.age",
@@ -114,15 +116,23 @@ func main() {
 		},
 
 		// Rebuild Flags
-
+		&cli.IntFlag{
+			Category: "Rebuild",
+			EnvVars:  []string{"PARAMETER_COMPRESSION_LEVEL", "S3_CACHE_COMPRESSION_LEVEL"},
+			FilePath: "/vela/parameters/s3-cache/compression_level,/vela/secrets/s3-cache/compression_level",
+			Name:     "rebuild.compression_level",
+			Usage:    "compression level for the cache file (-1 to 9)",
+			Value:    flate.DefaultCompression, // -1 is the carryover default value from <v0.9.0 of this plugin
+		},
 		&cli.StringSliceFlag{
+			Category: "Rebuild",
 			EnvVars:  []string{"PARAMETER_MOUNT", "S3_CACHE_MOUNT"},
 			FilePath: "/vela/parameters/s3-cache/mount,/vela/secrets/s3-cache/mount",
 			Name:     "rebuild.mount",
 			Usage:    "list of files/directories to cache",
 		},
-
 		&cli.BoolFlag{
+			Category: "Rebuild",
 			EnvVars:  []string{"PARAMETER_PRESERVE_PATH", "S3_PRESERVE_PATH"},
 			FilePath: "/vela/parameters/s3-cache/preserve_path,/vela/secrets/s3-cache/preserve_path",
 			Name:     "rebuild.preserve_path",
@@ -253,13 +263,14 @@ func run(c *cli.Context) error {
 		},
 		// rebuild configuration
 		Rebuild: &Rebuild{
-			Bucket:       c.String("bucket"),
-			Filename:     c.String("filename"),
-			Timeout:      c.Duration("timeout"),
-			Mount:        c.StringSlice("rebuild.mount"),
-			Path:         c.String("path"),
-			Prefix:       c.String("prefix"),
-			PreservePath: c.Bool("rebuild.preserve_path"),
+			Bucket:           c.String("bucket"),
+			CompressionLevel: c.Int("rebuild.compression_level"),
+			Filename:         c.String("filename"),
+			Timeout:          c.Duration("timeout"),
+			Mount:            c.StringSlice("rebuild.mount"),
+			Path:             c.String("path"),
+			Prefix:           c.String("prefix"),
+			PreservePath:     c.Bool("rebuild.preserve_path"),
 		},
 		// restore configuration
 		Restore: &Restore{

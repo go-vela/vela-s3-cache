@@ -160,29 +160,30 @@ The following parameters can used to configure all image actions:
 
 The following parameters are used to configure the `restore` action:
 
-| Name       | Description                                                | Required | Default       | Environment Variables                       |
-| ---------- | ---------------------------------------------------------- | -------- | ------------- | ------------------------------------------- |
-| `filename` | the name of the cache object                               | `true`   | `archive.tgz` | `PARAMETER_FILENAME`<br>`S3_CACHE_FILENAME` |
-| `timeout`  | the timeout for the call to s3                             | `false`  | `10m`         | `PARAMETER_TIMEOUT`<br>`S3_CACHE_TIMEOUT`   |
+| Name       | Description                    | Required | Default       | Environment Variables                       |
+| ---------- | ------------------------------ | -------- | ------------- | ------------------------------------------- |
+| `filename` | the name of the cache object   | `true`   | `archive.tgz` | `PARAMETER_FILENAME`<br>`S3_CACHE_FILENAME` |
+| `timeout`  | the timeout for the call to s3 | `false`  | `10m`         | `PARAMETER_TIMEOUT`<br>`S3_CACHE_TIMEOUT`   |
 
 ### Rebuild
 
 The following parameters are used to configure the `rebuild` action:
 
-| Name            | Description                                                                 | Required | Default       | Environment Variables                           |
-| --------------- | --------------------------------------------------------------------------- | -------- | ------------- | ----------------------------------------------- |
-| `filename`      | the name of the cache object                                                | `true`   | `archive.tgz` | `PARAMETER_FILENAME`<br>`S3_CACHE_FILENAME`     |
-| `timeout`       | the timeout for the call to s3                                              | `false`  | `10m`         | `PARAMETER_TIMEOUT`<br>`S3_CACHE_TIMEOUT`       |
-| `preserve_path` | whether to preserve the relative directory structure during the tar process | `false`  | `false`       | `PARAMETER_PRESERVE_PATH`<br>`S3_PRESERVE_PATH` |
-| `mount`         | the file or directories locations to build your cache from                  | `true`   | `N/A`         | `PARAMETER_MOUNT`<br>`S3_CACHE_MOUNT`           |
+| Name                | Description                                                                 | Required | Default       | Environment Variables                                   |
+| ------------------- | --------------------------------------------------------------------------- | -------- | ------------- | ------------------------------------------------------- |
+| `filename`          | the name of the cache object                                                | `true`   | `archive.tgz` | `PARAMETER_FILENAME`<br>`S3_CACHE_FILENAME`             |
+| `timeout`           | the timeout for the call to s3                                              | `false`  | `10m`         | `PARAMETER_TIMEOUT`<br>`S3_CACHE_TIMEOUT`               |
+| `compression_level` | the compression level for the cache object                                  | `false`  | `-1`          | `PARAMETER_COMPRESSION_LEVEL`<br>`S3_COMPRESSION_LEVEL` |
+| `preserve_path`     | whether to preserve the relative directory structure during the tar process | `false`  | `false`       | `PARAMETER_PRESERVE_PATH`<br>`S3_PRESERVE_PATH`         |
+| `mount`             | the file or directories locations to build your cache from                  | `true`   | `N/A`         | `PARAMETER_MOUNT`<br>`S3_CACHE_MOUNT`                   |
 
 ### Flush
 
 The following parameters are used to configure the `flush` action:
 
-| Name  | Description                                             | Required | Default | Environment Variables             |
-| ----- | ------------------------------------------------------- | -------- | ------- | --------------------------------- |
-| `age` | delete the objects past a specific age (i.e. 60m, 8h)   | `false`  | `336h`  | `PARAMETER_AGE`<br>`S3_CACHE_AGE` |
+| Name  | Description                                           | Required | Default | Environment Variables             |
+| ----- | ----------------------------------------------------- | -------- | ------- | --------------------------------- |
+| `age` | delete the objects past a specific age (i.e. 60m, 8h) | `false`  | `336h`  | `PARAMETER_AGE`<br>`S3_CACHE_AGE` |
 
 ## Template
 

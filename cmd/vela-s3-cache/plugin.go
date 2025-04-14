@@ -33,14 +33,14 @@ func (p *Plugin) Exec() (err error) {
 	logrus.Info("s3 cache plugin starting...")
 
 	// create a minio client
-	logrus.Info("creating an s3 client")
+	logrus.Debug("creating an s3 client")
 
 	mc, err := p.Config.New()
 	if err != nil {
 		return err
 	}
 
-	logrus.Info("s3 client created")
+	logrus.Debug("s3 client created")
 
 	// execute action specific configuration
 	switch p.Config.Action {
@@ -55,7 +55,7 @@ func (p *Plugin) Exec() (err error) {
 		return p.Restore.Exec(mc)
 	default:
 		return fmt.Errorf(
-			"%w: %s (Valid actions: %s, %s, %s)",
+			"%w: %s (Valid actions: %s, %s, %s) - please check your configuration",
 			ErrInvalidAction,
 			p.Config.Action,
 			flushAction,
@@ -125,7 +125,7 @@ func buildNamespace(r *Repo, prefix, path, filename string) string {
 	// set the default path for where to store the object
 	p := filepath.Join(prefix, r.Owner, r.Name, filename)
 
-	// Path was supplied and will override default
+	// path was supplied and will override default
 	if len(path) > 0 {
 		p = filepath.Join(path, filename)
 	}
