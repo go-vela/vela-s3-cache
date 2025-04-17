@@ -3,6 +3,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -31,191 +32,267 @@ func main() {
 	// output the version information to stdout
 	fmt.Fprintf(os.Stdout, "%s\n", string(bytes))
 
-	// create new CLI application
-	app := cli.NewApp()
-
-	// Plugin Information
-
-	app.Name = "vela-s3-cache"
-	app.HelpName = "vela-s3-cache"
-	app.Usage = "Vela S3 cache plugin for managing a build cache in S3"
-	app.Copyright = "Copyright 2020 Target Brands, Inc. All rights reserved."
-	app.Authors = []*cli.Author{
-		{
-			Name:  "Vela Admins",
-			Email: "vela@target.com",
-		},
+	cmd := &cli.Command{
+		Name:      "vela-s3-cache",
+		Version:   v.Semantic(),
+		Usage:     "Vela S3 cache plugin for managing a build cache in S3",
+		Copyright: "Copyright 2020 Target Brands, Inc. All rights reserved.",
+		Action:    run,
 	}
 
-	// Plugin Metadata
-
-	app.Action = run
-	app.Compiled = time.Now()
-	app.Version = v.Semantic()
-
 	// Plugin Flags
-	app.Flags = []cli.Flag{
+	cmd.Flags = []cli.Flag{
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "S3_CACHE_LOG_LEVEL"},
-			FilePath: "/vela/parameters/s3-cache/log_level,/vela/secrets/s3-cache/log_level",
-			Name:     "log.level",
-			Usage:    "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
-			Value:    "info",
+			Name:  "log.level",
+			Usage: "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_LOG_LEVEL"),
+				cli.EnvVar("S3_CACHE_LOG_LEVEL"),
+				cli.File("/vela/parameters/s3-cache/log_level"),
+				cli.File("/vela/secrets/s3-cache/log_level"),
+			),
+			Value: "info",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ACTION", "S3_CACHE_ACTION"},
-			FilePath: "/vela/parameters/s3-cache/action,/vela/secrets/s3-cache/action",
-			Name:     "config.action",
-			Usage:    "action to perform against the s3 cache instance",
+			Name:  "config.action",
+			Usage: "action to perform against the s3 cache instance",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_ACTION"),
+				cli.EnvVar("S3_CACHE_ACTION"),
+				cli.File("/vela/parameters/s3-cache/action"),
+				cli.File("/vela/secrets/s3-cache/action"),
+			),
 		},
 
 		// Cache Flags
-
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_BUCKET", "S3_CACHE_BUCKET"},
-			FilePath: "/vela/parameters/s3-cache/bucket,/vela/secrets/s3-cache/bucket",
-			Name:     "bucket",
-			Usage:    "name of the s3 bucket",
+			Name:  "bucket",
+			Usage: "name of the s3 bucket",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_BUCKET"),
+				cli.EnvVar("S3_CACHE_BUCKET"),
+				cli.File("/vela/parameters/s3-cache/bucket"),
+				cli.File("/vela/secrets/s3-cache/bucket"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_PREFIX", "S3_CACHE_PREFIX"},
-			FilePath: "/vela/parameters/s3-cache/prefix,/vela/secrets/s3-cache/prefix",
-			Name:     "prefix",
-			Usage:    "path prefix for all cache default paths",
+			Name:  "prefix",
+			Usage: "path prefix for all cache default paths",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_PREFIX"),
+				cli.EnvVar("S3_CACHE_PREFIX"),
+				cli.File("/vela/parameters/s3-cache/prefix"),
+				cli.File("/vela/secrets/s3-cache/prefix"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_FILENAME", "S3_CACHE_FILENAME"},
-			FilePath: "/vela/parameters/s3-cache/filename,/vela/secrets/s3-cache/filename",
-			Name:     "filename",
-			Usage:    "filename for the item place in the cache",
-			Value:    "archive.tgz",
+			Name:  "filename",
+			Usage: "filename for the item place in the cache",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_FILENAME"),
+				cli.EnvVar("S3_CACHE_FILENAME"),
+				cli.File("/vela/parameters/s3-cache/filename"),
+				cli.File("/vela/secrets/s3-cache/filename"),
+			),
+			Value: "archive.tgz",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_PATH", "S3_CACHE_PATH"},
-			FilePath: "/vela/parameters/s3-cache/path,/vela/secrets/s3-cache/path",
-			Name:     "path",
-			Usage:    "path to store the cache file",
+			Name:  "path",
+			Usage: "path to store the cache file",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_PATH"),
+				cli.EnvVar("S3_CACHE_PATH"),
+				cli.File("/vela/parameters/s3-cache/path"),
+				cli.File("/vela/secrets/s3-cache/path"),
+			),
 		},
 		&cli.DurationFlag{
-			EnvVars:  []string{"PARAMETER_TIMEOUT", "S3_CACHE_TIMEOUT"},
-			FilePath: "/vela/parameters/s3-cache/timeout,/vela/secrets/s3-cache/timeout",
-			Name:     "timeout",
-			Usage:    "default timeout for cache requests",
-			Value:    10 * time.Minute,
+			Name:  "timeout",
+			Usage: "default timeout for cache requests",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_TIMEOUT"),
+				cli.EnvVar("S3_CACHE_TIMEOUT"),
+				cli.File("/vela/parameters/s3-cache/timeout"),
+				cli.File("/vela/secrets/s3-cache/timeout"),
+			),
+			Value: 10 * time.Minute,
 		},
 
 		// Flush Flags
-
 		&cli.DurationFlag{
 			Category: "Flush",
-			EnvVars:  []string{"PARAMETER_AGE", "PARAMETER_FLUSH_AGE", "S3_CACHE_AGE"},
-			FilePath: "/vela/parameters/s3-cache/age,/vela/secrets/s3-cache/age",
 			Name:     "flush.age",
 			Usage:    "flush cache files older than # days",
-			Value:    14 * 24 * time.Hour,
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_AGE"),
+				cli.EnvVar("PARAMETER_FLUSH_AGE"),
+				cli.EnvVar("S3_CACHE_AGE"),
+				cli.File("/vela/parameters/s3-cache/age"),
+				cli.File("/vela/secrets/s3-cache/age"),
+			),
+			Value: 14 * 24 * time.Hour,
 		},
 
 		// Rebuild Flags
 		&cli.IntFlag{
 			Category: "Rebuild",
-			EnvVars:  []string{"PARAMETER_COMPRESSION_LEVEL", "S3_CACHE_COMPRESSION_LEVEL"},
-			FilePath: "/vela/parameters/s3-cache/compression_level,/vela/secrets/s3-cache/compression_level",
 			Name:     "rebuild.compression_level",
 			Usage:    "compression level for the cache file (-1 to 9)",
-			Value:    flate.DefaultCompression, // -1 is the carryover default value from <v0.9.0 of this plugin
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_COMPRESSION_LEVEL"),
+				cli.EnvVar("S3_CACHE_COMPRESSION_LEVEL"),
+				cli.File("/vela/parameters/s3-cache/compression_level"),
+				cli.File("/vela/secrets/s3-cache/compression_level"),
+			),
+			Value: flate.DefaultCompression, // -1 is the carryover default value from <v0.9.0 of this plugin
 		},
 		&cli.StringSliceFlag{
 			Category: "Rebuild",
-			EnvVars:  []string{"PARAMETER_MOUNT", "S3_CACHE_MOUNT"},
-			FilePath: "/vela/parameters/s3-cache/mount,/vela/secrets/s3-cache/mount",
 			Name:     "rebuild.mount",
 			Usage:    "list of files/directories to cache",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_MOUNT"),
+				cli.EnvVar("S3_CACHE_MOUNT"),
+				cli.File("/vela/parameters/s3-cache/mount"),
+				cli.File("/vela/secrets/s3-cache/mount"),
+			),
 		},
 		&cli.BoolFlag{
 			Category: "Rebuild",
-			EnvVars:  []string{"PARAMETER_PRESERVE_PATH", "S3_PRESERVE_PATH"},
-			FilePath: "/vela/parameters/s3-cache/preserve_path,/vela/secrets/s3-cache/preserve_path",
 			Name:     "rebuild.preserve_path",
-			Value:    false,
-			Usage:    "whether to preserve the relative directory structure during the tar process",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_PRESERVE_PATH"),
+				cli.EnvVar("S3_PRESERVE_PATH"),
+				cli.File("/vela/parameters/s3-cache/preserve_path"),
+				cli.File("/vela/secrets/s3-cache/preserve_path"),
+			),
+			Value: false,
+			Usage: "whether to preserve the relative directory structure during the tar process",
 		},
 
 		// S3 Flags
-
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SERVER", "CACHE_S3_SERVER", "S3_CACHE_SERVER"},
-			FilePath: "/vela/parameters/s3-cache/server,/vela/secrets/s3-cache/server",
-			Name:     "config.server",
-			Usage:    "s3 server to store the cache",
+			Name:  "config.server",
+			Usage: "s3 server to store the cache",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_SERVER"),
+				cli.EnvVar("CACHE_S3_SERVER"),
+				cli.EnvVar("S3_CACHE_SERVER"),
+				cli.File("/vela/parameters/s3-cache/server"),
+				cli.File("/vela/secrets/s3-cache/server"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ACCELERATED_ENDPOINT", "CACHE_S3_ACCELERATED_ENDPOINT", "S3_CACHE_ACCELERATED_ENDPOINT"},
-			FilePath: "/vela/parameters/s3-cache/accelerated_endpoint,/vela/secrets/s3-cache/accelerated_endpoint",
-			Name:     "config.accelerated_endpoint",
-			Usage:    "s3 accelerated endpoint",
+			Name:  "config.accelerated_endpoint",
+			Usage: "s3 accelerated endpoint",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_ACCELERATED_ENDPOINT"),
+				cli.EnvVar("CACHE_S3_ACCELERATED_ENDPOINT"),
+				cli.EnvVar("S3_CACHE_ACCELERATED_ENDPOINT"),
+				cli.File("/vela/parameters/s3-cache/accelerated_endpoint"),
+				cli.File("/vela/secrets/s3-cache/accelerated_endpoint"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ACCESS_KEY", "S3_CACHE_ACCESS_KEY", "CACHE_S3_ACCESS_KEY", "AWS_ACCESS_KEY_ID"},
-			FilePath: "/vela/parameters/s3-cache/access_key,/vela/secrets/s3-cache/access_key",
-			Name:     "config.access_key",
-			Usage:    "s3 access key for authentication to server",
+			Name:  "config.access_key",
+			Usage: "s3 access key for authentication to server",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_ACCESS_KEY"),
+				cli.EnvVar("S3_CACHE_ACCESS_KEY"),
+				cli.EnvVar("CACHE_S3_ACCESS_KEY"),
+				cli.EnvVar("AWS_ACCESS_KEY_ID"),
+				cli.File("/vela/parameters/s3-cache/access_key"),
+				cli.File("/vela/secrets/s3-cache/access_key"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SECRET_KEY", "S3_CACHE_SECRET_KEY", "CACHE_S3_SECRET_KEY", "AWS_SECRET_ACCESS_KEY"},
-			FilePath: "/vela/parameters/s3-cache/secret_key,/vela/secrets/s3-cache/secret_key",
-			Name:     "config.secret_key",
-			Usage:    "s3 secret key for authentication to server",
+			Name:  "config.secret_key",
+			Usage: "s3 secret key for authentication to server",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_SECRET_KEY"),
+				cli.EnvVar("S3_CACHE_SECRET_KEY"),
+				cli.EnvVar("CACHE_S3_SECRET_KEY"),
+				cli.EnvVar("AWS_SECRET_ACCESS_KEY"),
+				cli.File("/vela/parameters/s3-cache/secret_key"),
+				cli.File("/vela/secrets/s3-cache/secret_key"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SESSION_TOKEN", "S3_CACHE_SESSION_TOKEN", "CACHE_S3_SESSION_TOKEN", "AWS_SESSION_TOKEN"},
-			FilePath: "/vela/parameters/s3-cache/session_token,/vela/secrets/s3-cache/session_token",
-			Name:     "config.session_token",
-			Usage:    "s3 session token",
+			Name:  "config.session_token",
+			Usage: "s3 session token",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_SESSION_TOKEN"),
+				cli.EnvVar("S3_CACHE_SESSION_TOKEN"),
+				cli.EnvVar("CACHE_S3_SESSION_TOKEN"),
+				cli.EnvVar("AWS_SESSION_TOKEN"),
+				cli.File("/vela/parameters/s3-cache/session_token"),
+				cli.File("/vela/secrets/s3-cache/session_token"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_REGION", "CACHE_S3_REGION", "S3_CACHE_REGION"},
-			FilePath: "/vela/parameters/s3-cache/region,/vela/secrets/s3-cache/region",
-			Name:     "config.region",
-			Usage:    "s3 region for the region of the bucket",
+			Name:  "config.region",
+			Usage: "s3 region for the region of the bucket",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_REGION"),
+				cli.EnvVar("CACHE_S3_REGION"),
+				cli.EnvVar("S3_CACHE_REGION"),
+				cli.File("/vela/parameters/s3-cache/region"),
+				cli.File("/vela/secrets/s3-cache/region"),
+			),
 		},
 
 		// Build information (for setting defaults)
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ORG", "VELA_REPO_ORG"},
-			FilePath: "/vela/parameters/s3-cache/org,/vela/secrets/s3-cache/org",
-			Name:     "repo.org",
-			Usage:    "repository org",
+			Name:  "repo.org",
+			Usage: "repository org",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_ORG"),
+				cli.EnvVar("VELA_REPO_ORG"),
+				cli.File("/vela/parameters/s3-cache/org"),
+				cli.File("/vela/secrets/s3-cache/org"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_REPO", "VELA_REPO_NAME"},
-			FilePath: "/vela/parameters/s3-cache/repo,/vela/secrets/s3-cache/repo",
-			Name:     "repo.name",
-			Usage:    "repository name",
+			Name:  "repo.name",
+			Usage: "repository name",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_REPO"),
+				cli.EnvVar("VELA_REPO_NAME"),
+				cli.File("/vela/parameters/s3-cache/repo"),
+				cli.File("/vela/secrets/s3-cache/repo"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_REPO_BRANCH", "VELA_REPO_BRANCH"},
-			FilePath: "/vela/parameters/s3-cache/repo_branch,/vela/secrets/s3-cache/repo_branch",
-			Name:     "repo.branch",
-			Usage:    "default branch for the repository",
-			Value:    "main",
+			Name:  "repo.branch",
+			Usage: "default branch for the repository",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_REPO_BRANCH"),
+				cli.EnvVar("VELA_REPO_BRANCH"),
+				cli.File("/vela/parameters/s3-cache/repo_branch"),
+				cli.File("/vela/secrets/s3-cache/repo_branch"),
+			),
+			Value: "main",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_BUILD_BRANCH", "VELA_BUILD_BRANCH"},
-			FilePath: "/vela/parameters/s3-cache/build_branch,/vela/secrets/s3-cache/repo/build_branch",
-			Name:     "repo.build.branch",
-			Usage:    "git build branch",
-			Value:    "main",
+			Name:  "repo.build.branch",
+			Usage: "git build branch",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_BUILD_BRANCH"),
+				cli.EnvVar("VELA_BUILD_BRANCH"),
+				cli.File("/vela/parameters/s3-cache/build_branch"),
+				cli.File("/vela/secrets/s3-cache/build_branch"),
+			),
+			Value: "main",
 		},
 	}
 
-	err = app.Run(os.Args)
-	if err != nil {
+	if err = cmd.Run(context.Background(), os.Args); err != nil {
 		logrus.Fatal(err)
 	}
 }
 
 // run executes the plugin based off the configuration provided.
-func run(c *cli.Context) error {
+func run(ctx context.Context, c *cli.Command) error {
 	// set the log level for the plugin
 	switch c.String("log.level") {
 	case "t", "trace", "Trace", "TRACE":
@@ -296,5 +373,5 @@ func run(c *cli.Context) error {
 	}
 
 	// execute the plugin
-	return p.Exec()
+	return p.Exec(ctx)
 }

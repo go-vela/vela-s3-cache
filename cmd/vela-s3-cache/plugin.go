@@ -3,6 +3,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -29,7 +30,7 @@ type Plugin struct {
 }
 
 // Exec runs the plugin with the settings passed from user.
-func (p *Plugin) Exec() (err error) {
+func (p *Plugin) Exec(ctx context.Context) (err error) {
 	logrus.Info("s3 cache plugin starting...")
 
 	// create a minio client
@@ -46,13 +47,13 @@ func (p *Plugin) Exec() (err error) {
 	switch p.Config.Action {
 	case flushAction:
 		// execute flush action
-		return p.Flush.Exec(mc)
+		return p.Flush.Exec(ctx, mc)
 	case rebuildAction:
 		// execute rebuild action
-		return p.Rebuild.Exec(mc)
+		return p.Rebuild.Exec(ctx, mc)
 	case restoreAction:
 		// execute restore action
-		return p.Restore.Exec(mc)
+		return p.Restore.Exec(ctx, mc)
 	default:
 		return fmt.Errorf(
 			"%w: %s (Valid actions: %s, %s, %s) - please check your configuration",

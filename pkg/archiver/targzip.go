@@ -16,7 +16,7 @@ import (
 
 // TarGzipArchiver is an Archiver that compresses and adds files to a tar archive.
 type TarGzipArchiver struct {
-	CompressionLevel int
+	CompressionLevel int64
 	PreservePath     bool
 
 	extractedSymlinks map[string]string
@@ -36,7 +36,7 @@ func (t *TarGzipArchiver) Archive(ctx context.Context, src []string, dest io.Wri
 		return fmt.Errorf("failed to filter redundant paths: %w", err)
 	}
 
-	gzipWriter, err := gzip.NewWriterLevel(dest, t.CompressionLevel)
+	gzipWriter, err := gzip.NewWriterLevel(dest, int(t.CompressionLevel))
 	if err != nil {
 		return err
 	}
