@@ -45,7 +45,19 @@ type Rebuild struct {
 func (r *Rebuild) Exec(mc *minio.Client) error {
 	logrus.Trace("running rebuild with provided configuration")
 
-	p := filepath.Join(os.TempDir(), r.Filename)
+	// use OS's tmp dir for archive creation
+	dir := os.TempDir()
+
+	// make sure the target directory exists
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		err := os.MkdirAll(dir, 0755)
+		if err != nil {
+			return fmt.Errorf("unable to create target directory %q for archive: %w", dir, err)
+		}
+	}
+
+	p := filepath.Join(dir, r.Filename)
 
 	logrus.Debugf("determined temporary file path as %s", p)
 

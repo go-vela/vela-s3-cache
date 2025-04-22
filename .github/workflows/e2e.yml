@@ -8,14 +8,14 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  test_binary:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-            # ensures we fetch tag history for the repository
-            fetch-depth: 0
+          # ensures we fetch tag history for the repository
+          fetch-depth: 0
 
       - name: install go
         uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
@@ -90,6 +90,107 @@ jobs:
           VELA_REPO_NAME: test
         run: |
           ./release/vela-s3-cache --config.action=restore
+
+      - name: check
+        run: |
+          if ! diff -rq --no-dereference node_modules node_modules_original; then
+            echo "differences found between node_modules and node_modules_original"
+            exit 1
+          else
+            echo "no differences found - cache restored successfully"
+          fi
+
+  test_docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # ensures we fetch tag history for the repository
+          fetch-depth: 0
+
+      - name: install go
+        uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
+        with:
+          # use version from go.mod file
+          go-version-file: "go.mod"
+          cache: true
+          check-latest: true
+
+      - name: build s3-cache plugin binary
+        run: |
+          make build
+
+      - name: build docker image
+        run: |
+          make docker-build
+
+      # install node to create a folder to cache
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: latest
+
+      - name: install eslint
+        run: |
+          npm init -y
+          npm install eslint
+
+      - name: start minio server
+        run: |
+          docker run -d -p 9000:9000 --name minio \
+            -e "MINIO_ACCESS_KEY=minioadmin" \
+            -e "MINIO_SECRET_KEY=minioadmin" \
+            -v /tmp/data:/data \
+            -v /tmp/config:/root/.minio \
+            --health-cmd "curl http://localhost:9000/minio/health/live" \
+            minio/minio:RELEASE.2025-04-03T14-56-28Z@sha256:a640662d97632f7b94e9dee8cbb7da5c20db24879725cb4fac36f1e220cd528a server /data
+
+      - name: wait for minio
+        timeout-minutes: 1
+        run: |
+          until curl http://localhost:9000/minio/health/live; do
+            sleep 5
+          done
+
+      - name: install mc
+        run: |
+          curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
+          curl https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o /tmp/mc.sha256sum
+          sha256sum /usr/local/bin/mc | awk '{print $1}' | grep -q "$(awk '{print $1}' /tmp/mc.sha256sum)" && echo "SHA256 checksum matched" || { echo "SHA256 checksum for minio client binary does not match - exiting with error"; exit 1; }
+          chmod +x /usr/local/bin/mc
+
+      - name: create test bucket
+        run: |
+          mc config host add myminio http://localhost:9000 minioadmin minioadmin
+          mc mb myminio/test-bucket
+
+      - name: test rebuild action
+        run: |
+          docker run -v $(pwd):/src -w /src \
+          --network=host \
+          -e S3_CACHE_SERVER="http://localhost:9000" \
+          -e S3_CACHE_ACCESS_KEY=minioadmin \
+          -e S3_CACHE_SECRET_KEY=minioadmin \
+          -e S3_CACHE_BUCKET=test-bucket \
+          -e VELA_REPO_ORG=org \
+          -e VELA_REPO_NAME=repo \
+          -e S3_CACHE_ACTION=rebuild \
+          -e S3_CACHE_MOUNT=node_modules \
+          vela-s3-cache:local 
+          mv node_modules node_modules_original
+
+      - name: test restore action
+        run: |
+          docker run -v $(pwd):/src -w /src \
+          --network=host \
+          -e S3_CACHE_SERVER="http://localhost:9000" \
+          -e S3_CACHE_ACCESS_KEY=minioadmin \
+          -e S3_CACHE_SECRET_KEY=minioadmin \
+          -e S3_CACHE_BUCKET=test-bucket \
+          -e VELA_REPO_ORG=org \
+          -e VELA_REPO_NAME=repo \
+          -e S3_CACHE_ACTION=restore \
+          vela-s3-cache:local
 
       - name: check
         run: |
