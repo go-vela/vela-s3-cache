@@ -5,7 +5,6 @@ package archiver
 import (
 	"archive/tar"
 	"bytes"
-	"compress/gzip"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/klauspost/compress/gzip"
 )
 
 func TestTarGzipArchiver(t *testing.T) {
