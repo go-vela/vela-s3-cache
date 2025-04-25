@@ -3,7 +3,6 @@
 package main
 
 import (
-	"compress/flate"
 	"context"
 	"fmt"
 	"os"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/klauspost/compress/flate"
 	"github.com/minio/minio-go/v7"
 	"github.com/sirupsen/logrus"
 

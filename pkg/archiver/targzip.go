@@ -4,13 +4,14 @@ package archiver
 
 import (
 	"archive/tar"
-	"compress/gzip"
 	"context"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/klauspost/compress/gzip"
 )
 
 // TarGzipArchiver is an Archiver that compresses and adds files to a tar archive.

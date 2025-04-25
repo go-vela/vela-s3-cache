@@ -3,12 +3,12 @@
 package main
 
 import (
-	"compress/flate"
 	"encoding/json"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/klauspost/compress/flate"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 
