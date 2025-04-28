@@ -341,7 +341,7 @@ func run(ctx context.Context, c *cli.Command) error {
 		// rebuild configuration
 		Rebuild: &Rebuild{
 			Bucket:           c.String("bucket"),
-			CompressionLevel: c.Int("rebuild.compression_level"),
+			CompressionLevel: c.Int64("rebuild.compression_level"),
 			Filename:         c.String("filename"),
 			Timeout:          c.Duration("timeout"),
 			Mount:            c.StringSlice("rebuild.mount"),
