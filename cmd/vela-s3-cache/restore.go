@@ -34,13 +34,13 @@ type Restore struct {
 }
 
 // Exec formats and runs the actions for restoring a cache in s3.
-func (r *Restore) Exec(mc *minio.Client) error {
+func (r *Restore) Exec(ctx context.Context, mc *minio.Client) error {
 	logrus.Trace("running restore with provided configuration")
 
 	logrus.Debugf("getting object info on bucket %s from path: %s", r.Bucket, r.Namespace)
 
 	// set a timeout on the request to the cache provider
-	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, r.Timeout)
 	defer cancel()
 
 	a, err := archiver.NewArchiver("tar.gz")

@@ -43,7 +43,7 @@ func testTarGzipArchiverCompressionLevel(t *testing.T) {
 		name        string
 		format      string
 		want        Archiver
-		compression int
+		compression int64
 		wantErr     bool
 	}{
 		{
@@ -102,7 +102,7 @@ func testCompressionLevelEffectiveness(t *testing.T) {
 
 	// test with different compression levels
 	compressionLevels := []struct {
-		level       int
+		level       int64
 		description string
 	}{
 		{gzip.NoCompression, "no compression"},

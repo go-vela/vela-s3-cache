@@ -19,12 +19,12 @@ type Option func(*Options)
 
 // Options are the options for an Archiver.
 type Options struct {
-	CompressionLevel int
+	CompressionLevel int64
 	PreservePath     bool
 }
 
 // WithCompressionLevel sets the compression level for the archiver.
-func WithCompressionLevel(level int) Option {
+func WithCompressionLevel(level int64) Option {
 	return func(o *Options) {
 		o.CompressionLevel = level
 	}

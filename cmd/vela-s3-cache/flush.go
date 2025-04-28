@@ -29,7 +29,7 @@ type Flush struct {
 }
 
 // Exec formats and runs the actions for flushing a cache in s3.
-func (f *Flush) Exec(mc *minio.Client) error {
+func (f *Flush) Exec(ctx context.Context, mc *minio.Client) error {
 	logrus.Trace("running flush with provided configuration")
 
 	// temp var for messaging to user
@@ -38,7 +38,7 @@ func (f *Flush) Exec(mc *minio.Client) error {
 	bytesFreedCounter := uint64(0)
 
 	// set a timeout on the request to the cache provider
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	logrus.Infof("processing cached objects in path %s", f.Namespace)

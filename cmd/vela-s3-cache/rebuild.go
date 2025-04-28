@@ -24,7 +24,7 @@ type Rebuild struct {
 	// sets the name of the bucket
 	Bucket string
 	// set the compression level for the archive
-	CompressionLevel int
+	CompressionLevel int64
 	// sets the path for where to store the object
 	Path string
 	// sets the prefix for where to store the object
@@ -42,7 +42,7 @@ type Rebuild struct {
 }
 
 // Exec formats and runs the actions for rebuilding a cache in s3.
-func (r *Rebuild) Exec(mc *minio.Client) error {
+func (r *Rebuild) Exec(ctx context.Context, mc *minio.Client) error {
 	logrus.Trace("running rebuild with provided configuration")
 
 	// use OS's tmp dir for archive creation
@@ -79,7 +79,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	}
 
 	// archive the objects in the mount paths provided
-	err = a.Archive(context.Background(), r.Mount, f)
+	err = a.Archive(ctx, r.Mount, f)
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func (r *Rebuild) Exec(mc *minio.Client) error {
 	logrus.Infof("archive %s created with size %s", f.Name(), humanize.Bytes(uint64(max(0, stat.Size()))))
 
 	// set a timeout on the request to the cache provider
-	ctx, cancel := context.WithTimeout(context.Background(), r.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, r.Timeout)
 	defer cancel()
 
 	logrus.Debugf("putting archive %s in bucket %s in path: %s", f.Name(), r.Bucket, r.Namespace)
