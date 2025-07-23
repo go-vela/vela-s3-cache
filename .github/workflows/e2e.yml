@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           # use version from go.mod file
-          go-version-file: "go.mod"
+          go-version-file: 'go.mod'
           cache: true
           check-latest: true
 
@@ -65,7 +65,7 @@ jobs:
 
       - name: create test bucket
         run: |
-          mc config host add myminio http://localhost:9000 minioadmin minioadmin
+          mc alias set myminio http://localhost:9000 minioadmin minioadmin
           mc mb myminio/test-bucket
 
       - name: test rebuild action
@@ -113,7 +113,7 @@ jobs:
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           # use version from go.mod file
-          go-version-file: "go.mod"
+          go-version-file: 'go.mod'
           cache: true
           check-latest: true
 
@@ -161,7 +161,7 @@ jobs:
 
       - name: create test bucket
         run: |
-          mc config host add myminio http://localhost:9000 minioadmin minioadmin
+          mc alias set myminio http://localhost:9000 minioadmin minioadmin
           mc mb myminio/test-bucket
 
       - name: test rebuild action
