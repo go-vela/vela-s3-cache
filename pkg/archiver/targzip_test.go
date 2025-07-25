@@ -14,7 +14,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/klauspost/compress/gzip"
+	gzip "github.com/klauspost/pgzip"
 )
 
 func TestTarGzipArchiver(t *testing.T) {
