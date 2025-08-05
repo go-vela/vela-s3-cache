@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/mail"
 	"os"
 	"time"
 
@@ -37,13 +38,20 @@ func main() {
 		Version:   v.Semantic(),
 		Usage:     "Vela S3 cache plugin for managing a build cache in S3",
 		Copyright: "Copyright 2020 Target Brands, Inc. All rights reserved.",
-		Action:    run,
+		Authors: []any{
+			&mail.Address{
+				Name:    "Vela Admins",
+				Address: "vela@target.com",
+			},
+		},
+		Action: run,
 	}
 
 	// Plugin Flags
 	cmd.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:  "log.level",
+			Value: "info",
 			Usage: "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
 			Sources: cli.NewValueSourceChain(
 				cli.EnvVar("PARAMETER_LOG_LEVEL"),
@@ -51,7 +59,6 @@ func main() {
 				cli.File("/vela/parameters/s3-cache/log_level"),
 				cli.File("/vela/secrets/s3-cache/log_level"),
 			),
-			Value: "info",
 		},
 		&cli.StringFlag{
 			Name:  "config.action",
@@ -87,6 +94,7 @@ func main() {
 		},
 		&cli.StringFlag{
 			Name:  "filename",
+			Value: "archive.tgz",
 			Usage: "filename for the item place in the cache",
 			Sources: cli.NewValueSourceChain(
 				cli.EnvVar("PARAMETER_FILENAME"),
@@ -94,7 +102,6 @@ func main() {
 				cli.File("/vela/parameters/s3-cache/filename"),
 				cli.File("/vela/secrets/s3-cache/filename"),
 			),
-			Value: "archive.tgz",
 		},
 		&cli.StringFlag{
 			Name:  "path",
@@ -108,6 +115,7 @@ func main() {
 		},
 		&cli.DurationFlag{
 			Name:  "timeout",
+			Value: 10 * time.Minute,
 			Usage: "default timeout for cache requests",
 			Sources: cli.NewValueSourceChain(
 				cli.EnvVar("PARAMETER_TIMEOUT"),
@@ -115,13 +123,13 @@ func main() {
 				cli.File("/vela/parameters/s3-cache/timeout"),
 				cli.File("/vela/secrets/s3-cache/timeout"),
 			),
-			Value: 10 * time.Minute,
 		},
 
 		// Flush Flags
 		&cli.DurationFlag{
 			Category: "Flush",
 			Name:     "flush.age",
+			Value:    14 * 24 * time.Hour,
 			Usage:    "flush cache files older than # days",
 			Sources: cli.NewValueSourceChain(
 				cli.EnvVar("PARAMETER_AGE"),
@@ -130,13 +138,13 @@ func main() {
 				cli.File("/vela/parameters/s3-cache/age"),
 				cli.File("/vela/secrets/s3-cache/age"),
 			),
-			Value: 14 * 24 * time.Hour,
 		},
 
 		// Rebuild Flags
 		&cli.IntFlag{
 			Category: "Rebuild",
 			Name:     "rebuild.compression_level",
+			Value:    flate.DefaultCompression, // -1 is the carryover default value from <v0.9.0 of this plugin
 			Usage:    "compression level for the cache file (-1 to 9)",
 			Sources: cli.NewValueSourceChain(
 				cli.EnvVar("PARAMETER_COMPRESSION_LEVEL"),
@@ -144,7 +152,6 @@ func main() {
 				cli.File("/vela/parameters/s3-cache/compression_level"),
 				cli.File("/vela/secrets/s3-cache/compression_level"),
 			),
-			Value: flate.DefaultCompression, // -1 is the carryover default value from <v0.9.0 of this plugin
 		},
 		&cli.StringSliceFlag{
 			Category: "Rebuild",
@@ -160,14 +167,14 @@ func main() {
 		&cli.BoolFlag{
 			Category: "Rebuild",
 			Name:     "rebuild.preserve_path",
+			Value:    false,
+			Usage:    "whether to preserve the relative directory structure during the tar process",
 			Sources: cli.NewValueSourceChain(
 				cli.EnvVar("PARAMETER_PRESERVE_PATH"),
 				cli.EnvVar("S3_PRESERVE_PATH"),
 				cli.File("/vela/parameters/s3-cache/preserve_path"),
 				cli.File("/vela/secrets/s3-cache/preserve_path"),
 			),
-			Value: false,
-			Usage: "whether to preserve the relative directory structure during the tar process",
 		},
 
 		// S3 Flags
@@ -264,6 +271,7 @@ func main() {
 		},
 		&cli.StringFlag{
 			Name:  "repo.branch",
+			Value: "main",
 			Usage: "default branch for the repository",
 			Sources: cli.NewValueSourceChain(
 				cli.EnvVar("PARAMETER_REPO_BRANCH"),
@@ -271,10 +279,10 @@ func main() {
 				cli.File("/vela/parameters/s3-cache/repo_branch"),
 				cli.File("/vela/secrets/s3-cache/repo_branch"),
 			),
-			Value: "main",
 		},
 		&cli.StringFlag{
 			Name:  "repo.build.branch",
+			Value: "main",
 			Usage: "git build branch",
 			Sources: cli.NewValueSourceChain(
 				cli.EnvVar("PARAMETER_BUILD_BRANCH"),
@@ -282,7 +290,6 @@ func main() {
 				cli.File("/vela/parameters/s3-cache/build_branch"),
 				cli.File("/vela/secrets/s3-cache/build_branch"),
 			),
-			Value: "main",
 		},
 	}
 
