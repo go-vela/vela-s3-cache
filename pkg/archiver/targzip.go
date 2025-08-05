@@ -11,7 +11,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/klauspost/compress/gzip"
+	gzip "github.com/klauspost/pgzip"
 )
 
 // TarGzipArchiver is an Archiver that compresses and adds files to a tar archive.
