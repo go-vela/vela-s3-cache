@@ -5,14 +5,14 @@ go 1.24.5
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/dustin/go-humanize v1.0.1
-	github.com/go-vela/server v0.26.4
+	github.com/go-vela/server v0.27.0
 	github.com/google/go-cmp v0.7.0
 	github.com/joho/godotenv v1.5.1
 	github.com/klauspost/compress v1.18.0
 	github.com/klauspost/pgzip v1.2.6
 	github.com/minio/minio-go/v7 v7.0.95
 	github.com/sirupsen/logrus v1.9.3
-	github.com/urfave/cli/v3 v3.3.8
+	github.com/urfave/cli/v3 v3.4.1
 )
 
 require (
@@ -25,8 +25,8 @@ require (
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/tinylib/msgp v1.3.0 // indirect
-	golang.org/x/crypto v0.39.0 // indirect
+	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
-	golang.org/x/text v0.26.0 // indirect
+	golang.org/x/text v0.27.0 // indirect
 )
