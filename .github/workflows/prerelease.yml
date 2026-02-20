@@ -5,7 +5,7 @@ name: prerelease
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 # pipeline to execute
 jobs:
@@ -20,10 +20,10 @@ jobs:
           fetch-depth: 0
 
       - name: install go
-        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6.2.0
         with:
           # use version from go.mod file
-          go-version-file: "go.mod"
+          go-version-file: 'go.mod'
           cache: true
           check-latest: true
 
@@ -35,7 +35,7 @@ jobs:
       - name: build
         env:
           GOOS: linux
-          CGO_ENABLED: "0"
+          CGO_ENABLED: '0'
         run: |
           make build-static-ci
 
