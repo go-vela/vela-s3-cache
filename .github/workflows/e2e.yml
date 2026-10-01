@@ -39,31 +39,19 @@ jobs:
           npm init -y
           npm install eslint
 
-      - name: start minio server
+      - name: start S3Mock
         run: |
           docker run -d -p 9000:9090 --name s3mock \
             -e COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS=test-bucket \
             -e COM_ADOBE_TESTING_S3MOCK_STORE_REGION=us-east-1 \
             adobe/s3mock:5.2.3@sha256:ab01a6946750f451ca215a47e91030695b260e4003b8a5a6201d25029b8fca92
 
-      - name: wait for minio
+      - name: wait for S3Mock
         timeout-minutes: 1
         run: |
           until curl -fsS http://localhost:9000/favicon.ico; do
             sleep 5
           done
-
-      - name: install mc
-        run: |
-          curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
-          curl https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o /tmp/mc.sha256sum
-          sha256sum /usr/local/bin/mc | awk '{print $1}' | grep -q "$(awk '{print $1}' /tmp/mc.sha256sum)" && echo "SHA256 checksum matched" || { echo "SHA256 checksum for minio client binary does not match - exiting with error"; exit 1; }
-          chmod +x /usr/local/bin/mc
-
-      - name: create test bucket
-        run: |
-          mc alias set myminio http://localhost:9000 minioadmin minioadmin
-          mc mb --ignore-existing myminio/test-bucket
 
       - name: test rebuild action
         env:
@@ -132,31 +120,19 @@ jobs:
           npm init -y
           npm install eslint
 
-      - name: start minio server
+      - name: start S3Mock
         run: |
           docker run -d -p 9000:9090 --name s3mock \
             -e COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS=test-bucket \
             -e COM_ADOBE_TESTING_S3MOCK_STORE_REGION=us-east-1 \
             adobe/s3mock:5.2.3@sha256:ab01a6946750f451ca215a47e91030695b260e4003b8a5a6201d25029b8fca92
 
-      - name: wait for minio
+      - name: wait for S3Mock
         timeout-minutes: 1
         run: |
           until curl -fsS http://localhost:9000/favicon.ico; do
             sleep 5
           done
-
-      - name: install mc
-        run: |
-          curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
-          curl https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o /tmp/mc.sha256sum
-          sha256sum /usr/local/bin/mc | awk '{print $1}' | grep -q "$(awk '{print $1}' /tmp/mc.sha256sum)" && echo "SHA256 checksum matched" || { echo "SHA256 checksum for minio client binary does not match - exiting with error"; exit 1; }
-          chmod +x /usr/local/bin/mc
-
-      - name: create test bucket
-        run: |
-          mc alias set myminio http://localhost:9000 minioadmin minioadmin
-          mc mb --ignore-existing myminio/test-bucket
 
       - name: test rebuild action
         run: |
