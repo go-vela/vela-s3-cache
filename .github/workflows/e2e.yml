@@ -41,18 +41,15 @@ jobs:
 
       - name: start minio server
         run: |
-          docker run -d -p 9000:9000 --name minio \
-            -e "MINIO_ACCESS_KEY=minioadmin" \
-            -e "MINIO_SECRET_KEY=minioadmin" \
-            -v /tmp/data:/data \
-            -v /tmp/config:/root/.minio \
-            --health-cmd "curl http://localhost:9000/minio/health/live" \
-            minio/minio:RELEASE.2025-04-03T14-56-28Z@sha256:a640662d97632f7b94e9dee8cbb7da5c20db24879725cb4fac36f1e220cd528a server /data
+          docker run -d -p 9000:9090 --name s3mock \
+            -e COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS=test-bucket \
+            -e COM_ADOBE_TESTING_S3MOCK_STORE_REGION=us-east-1 \
+            adobe/s3mock:5.2.3@sha256:ab01a6946750f451ca215a47e91030695b260e4003b8a5a6201d25029b8fca92
 
       - name: wait for minio
         timeout-minutes: 1
         run: |
-          until curl http://localhost:9000/minio/health/live; do
+          until curl -fsS http://localhost:9000/favicon.ico; do
             sleep 5
           done
 
@@ -66,7 +63,7 @@ jobs:
       - name: create test bucket
         run: |
           mc alias set myminio http://localhost:9000 minioadmin minioadmin
-          mc mb myminio/test-bucket
+          mc mb --ignore-existing myminio/test-bucket
 
       - name: test rebuild action
         env:
@@ -137,18 +134,15 @@ jobs:
 
       - name: start minio server
         run: |
-          docker run -d -p 9000:9000 --name minio \
-            -e "MINIO_ACCESS_KEY=minioadmin" \
-            -e "MINIO_SECRET_KEY=minioadmin" \
-            -v /tmp/data:/data \
-            -v /tmp/config:/root/.minio \
-            --health-cmd "curl http://localhost:9000/minio/health/live" \
-            minio/minio:RELEASE.2025-04-03T14-56-28Z@sha256:a640662d97632f7b94e9dee8cbb7da5c20db24879725cb4fac36f1e220cd528a server /data
+          docker run -d -p 9000:9090 --name s3mock \
+            -e COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS=test-bucket \
+            -e COM_ADOBE_TESTING_S3MOCK_STORE_REGION=us-east-1 \
+            adobe/s3mock:5.2.3@sha256:ab01a6946750f451ca215a47e91030695b260e4003b8a5a6201d25029b8fca92
 
       - name: wait for minio
         timeout-minutes: 1
         run: |
-          until curl http://localhost:9000/minio/health/live; do
+          until curl -fsS http://localhost:9000/favicon.ico; do
             sleep 5
           done
 
@@ -162,7 +156,7 @@ jobs:
       - name: create test bucket
         run: |
           mc alias set myminio http://localhost:9000 minioadmin minioadmin
-          mc mb myminio/test-bucket
+          mc mb --ignore-existing myminio/test-bucket
 
       - name: test rebuild action
         run: |
