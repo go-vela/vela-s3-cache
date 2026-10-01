@@ -39,14 +39,14 @@ jobs:
           npm init -y
           npm install eslint
 
-      - name: start S3Mock
+      - name: start s3mock
         run: |
           docker run -d -p 9000:9090 --name s3mock \
             -e COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS=test-bucket \
             -e COM_ADOBE_TESTING_S3MOCK_STORE_REGION=us-east-1 \
             adobe/s3mock:5.2.3@sha256:ab01a6946750f451ca215a47e91030695b260e4003b8a5a6201d25029b8fca92
 
-      - name: wait for S3Mock
+      - name: wait for s3mock
         timeout-minutes: 1
         run: |
           until curl -fsS http://localhost:9000/favicon.ico; do
@@ -120,14 +120,14 @@ jobs:
           npm init -y
           npm install eslint
 
-      - name: start S3Mock
+      - name: start s3mock
         run: |
           docker run -d -p 9000:9090 --name s3mock \
             -e COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS=test-bucket \
             -e COM_ADOBE_TESTING_S3MOCK_STORE_REGION=us-east-1 \
             adobe/s3mock:5.2.3@sha256:ab01a6946750f451ca215a47e91030695b260e4003b8a5a6201d25029b8fca92
 
-      - name: wait for S3Mock
+      - name: wait for s3mock
         timeout-minutes: 1
         run: |
           until curl -fsS http://localhost:9000/favicon.ico; do
